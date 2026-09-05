@@ -61,6 +61,7 @@ test("issue forms capture complete delivery and AI finding evidence", () => {
 
   const findingLabels = []
     .concat(finding.labels ?? [])
+    .flatMap((label) => String(label).split(","))
     .map((label) => String(label).trim().toLowerCase());
   assert.equal(findingLabels.includes("ai-found"), false);
   for (const field of ["outcome", "scope", "states", "responsive", "accessibility", "security", "api", "tests", "documentation"]) {
