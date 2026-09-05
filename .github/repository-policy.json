@@ -1,0 +1,92 @@
+{
+  "$schema": "./repository-policy.schema.json",
+  "schemaVersion": "1.0.0",
+  "repository": "GanapathySubramaniam/Nimbus-UI-Studio-Lab",
+  "visibility": "public",
+  "defaultBranch": "main",
+  "ruleset": {
+    "id": 22357934,
+    "name": "Nimbus main governance",
+    "targetRef": "refs/heads/main"
+  },
+  "lifecycle": {
+    "activePhase": "bootstrap",
+    "stableReleaseRequiresPhase": "stableRelease"
+  },
+  "mergePolicy": {
+    "allowSquashMerge": true,
+    "allowMergeCommit": false,
+    "allowRebaseMerge": false,
+    "deleteBranchOnMerge": true,
+    "linearHistory": true
+  },
+  "branchProtection": {
+    "bootstrap": {
+      "requiredApprovingReviews": 0,
+      "requiredStatusChecks": ["validate"],
+      "dismissStaleReviews": true,
+      "requireCodeOwnerReviews": false,
+      "requireLastPushApproval": false,
+      "requireConversationResolution": true,
+      "allowForcePushes": false,
+      "allowDeletions": false,
+      "enforceForAdministrators": false
+    },
+    "stableRelease": {
+      "requiredApprovingReviews": 1,
+      "requiredStatusChecks": ["validate"],
+      "dismissStaleReviews": true,
+      "requireCodeOwnerReviews": true,
+      "requireLastPushApproval": true,
+      "requireConversationResolution": true,
+      "allowForcePushes": false,
+      "allowDeletions": false,
+      "enforceForAdministrators": true
+    }
+  },
+  "security": {
+    "secretScanning": "required",
+    "secretScanningPushProtection": "required",
+    "liveGovernanceSource": "effective-branch-rules-api",
+    "privateVulnerabilityReporting": "required-before-stable-release",
+    "dependencyReview": "required-when-package-manifests-exist",
+    "automatedDependencyUpdates": "required-when-package-manifests-exist"
+  },
+  "changeControl": {
+    "issueRequired": true,
+    "dedicatedBranchRequired": true,
+    "pullRequestRequired": true,
+    "signedOffCommits": {
+      "status": "required-now",
+      "check": "repository-governance / validate"
+    },
+    "issueClosingReference": {
+      "status": "required-now",
+      "check": "repository-governance / validate"
+    },
+    "publicContractArtifacts": {
+      "status": "required-when-public-packages-exist",
+      "trackingIssue": 115,
+      "changesetTool": "@changesets/cli",
+      "apiReportTool": "@microsoft/api-extractor",
+      "paths": [
+        "packages/*/src/index.ts",
+        "packages/*/src/index.tsx",
+        "packages/contracts/schemas/**",
+        "packages/tokens/src/**"
+      ]
+    }
+  },
+  "aiReview": {
+    "implementationAgent": "codex",
+    "functionalValidationModel": "antigravity-claude",
+    "qualitySecurityModel": "antigravity-gemini-pro",
+    "reviewModelsMayWriteImplementation": false,
+    "findingGate": {
+      "status": "deferred-until-finding-ledger",
+      "trackingIssue": 116,
+      "exactCommitRequired": true,
+      "revalidationRequired": true
+    }
+  }
+}

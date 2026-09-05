@@ -20,7 +20,7 @@ Nimbus is in foundation development. Public APIs are not stable until the coordi
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md), and [SECURITY.md](SECURITY.md) before contributing.
+Read [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md), [SECURITY.md](SECURITY.md), and the [repository governance baseline](docs/release/repository-governance.md) before contributing.
 
 ## License
 
