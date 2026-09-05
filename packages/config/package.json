@@ -1,0 +1,17 @@
+{
+  "name": "@nimbus-ui-studio/config",
+  "version": "0.0.0",
+  "description": "Shared build, lint, test, and TypeScript policy for Nimbus UI Studio Lab.",
+  "license": "Apache-2.0",
+  "private": false,
+  "type": "module",
+  "files": [
+    "typescript"
+  ],
+  "exports": {
+    "./typescript/base": "./typescript/base.json",
+    "./typescript/browser": "./typescript/browser.json",
+    "./typescript/server": "./typescript/server.json",
+    "./typescript/library": "./typescript/library.json"
+  }
+}

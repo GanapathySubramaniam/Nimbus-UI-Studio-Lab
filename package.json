@@ -13,13 +13,15 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "test": "node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs tools/workspace/workspace.test.mjs && turbo run test",
+    "test": "node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs tools/workspace/workspace.test.mjs tools/workspace/typescript-config.test.mjs && turbo run test",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "turbo run clean"
   },
   "devDependencies": {
+    "@types/node": "26.4.1",
+    "typescript": "7.0.2",
     "turbo": "2.10.12"
   }
 }
