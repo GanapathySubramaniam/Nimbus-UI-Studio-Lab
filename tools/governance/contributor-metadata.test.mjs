@@ -50,19 +50,19 @@ test("issue forms capture complete delivery and AI finding evidence", () => {
   for (const field of [
     "outcome", "ownership", "states", "responsive", "accessibility", "security",
     "api", "tests", "documentation", "acceptance",
-  ]) assert.match(task, new RegExp(`id: ${field}`));
+  ]) assert.match(task, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
 
   for (const field of [
     "source", "commit", "severity", "evidence", "impact", "resolution",
     "tests", "fingerprint",
-  ]) assert.match(finding, new RegExp(`id: ${field}`));
+  ]) assert.match(finding, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
 
-  assert.doesNotMatch(finding, /^labels:\s*\[ai-found\]/m);
+  assert.equal(finding.toLowerCase().includes("ai-found"), false);
   for (const field of ["outcome", "scope", "states", "responsive", "accessibility", "security", "api", "tests", "documentation"]) {
-    assert.match(feature, new RegExp(`id: ${field}`));
+    assert.match(feature, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
   }
   for (const field of ["description", "reproduction", "expected", "environment", "evidence", "states", "quality", "regression"]) {
-    assert.match(bug, new RegExp(`id: ${field}`));
+    assert.match(bug, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
   }
 });
 
