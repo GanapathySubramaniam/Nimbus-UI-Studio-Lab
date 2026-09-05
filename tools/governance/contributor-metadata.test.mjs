@@ -59,7 +59,10 @@ test("issue forms capture complete delivery and AI finding evidence", () => {
     "tests", "fingerprint",
   ]) assert.ok(ids(finding).has(field), `AI finding form is missing ${field}`);
 
-  assert.equal(finding.labels?.includes("ai-found") ?? false, false);
+  const findingLabels = []
+    .concat(finding.labels ?? [])
+    .map((label) => String(label).trim().toLowerCase());
+  assert.equal(findingLabels.includes("ai-found"), false);
   for (const field of ["outcome", "scope", "states", "responsive", "accessibility", "security", "api", "tests", "documentation"]) {
     assert.ok(ids(feature).has(field), `feature form is missing ${field}`);
   }
