@@ -230,6 +230,14 @@ test("live audits use the dedicated administration-read credential", () => {
     workflow.match(/Governance credential is not configured/g)?.length,
     2,
   );
+  assert.doesNotMatch(
+    workflow,
+    /runs-on: ubuntu-latest\s+env:\s+GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/,
+  );
+  assert.equal(
+    workflow.match(/- name: Fetch live repository policy state\s+env:\s+GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/g)?.length,
+    2,
+  );
 });
 
 test("blocks stable release while live settings still match bootstrap", () => {

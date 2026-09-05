@@ -51,21 +51,19 @@ jobs:
     name: bootstrap
     if: github.event_name == 'workflow_dispatch' && inputs.phase == 'bootstrap'
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Require the live-governance credential
+      - name: Fetch live repository policy state
+        env:
+          GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
             echo "::error::Governance credential is not configured"
             exit 1
           fi
-      - name: Fetch live repository policy state
-        run: |
           gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
           gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
       - name: Verify bootstrap repository protection
@@ -77,21 +75,19 @@ jobs:
     name: stable-release
     if: github.event_name == 'workflow_call' || (github.event_name == 'workflow_dispatch' && inputs.phase == 'stableRelease')
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Require the live-governance credential
+      - name: Fetch live repository policy state
+        env:
+          GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
             echo "::error::Governance credential is not configured"
             exit 1
           fi
-      - name: Fetch live repository policy state
-        run: |
           gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
           gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
       - name: Block release while bootstrap protection remains active
