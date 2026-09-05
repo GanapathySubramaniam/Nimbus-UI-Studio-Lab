@@ -18,6 +18,7 @@
   "branchProtection": {
     "bootstrap": {
       "requiredApprovingReviews": 0,
+      "requiredStatusChecks": ["validate"],
       "dismissStaleReviews": true,
       "requireCodeOwnerReviews": false,
       "requireLastPushApproval": false,
@@ -28,6 +29,7 @@
     },
     "stableRelease": {
       "requiredApprovingReviews": 1,
+      "requiredStatusChecks": ["validate"],
       "dismissStaleReviews": true,
       "requireCodeOwnerReviews": true,
       "requireLastPushApproval": true,
@@ -40,7 +42,7 @@
   "security": {
     "secretScanning": "required",
     "secretScanningPushProtection": "required",
-    "liveGovernanceCredential": "repository-secret-with-administration-read",
+    "liveGovernanceSource": "effective-branch-rules-api",
     "privateVulnerabilityReporting": "required-before-stable-release",
     "dependencyReview": "required-when-package-manifests-exist",
     "automatedDependencyUpdates": "required-when-package-manifests-exist"

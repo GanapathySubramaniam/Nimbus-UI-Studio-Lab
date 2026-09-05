@@ -4,10 +4,6 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
   workflow_call:
-    secrets:
-      NIMBUS_GOVERNANCE_TOKEN:
-        description: Administration-read token for live repository policy checks
-        required: true
   workflow_dispatch:
     inputs:
       phase:
@@ -58,16 +54,12 @@ jobs:
           node-version: 22
       - name: Fetch live repository policy state
         env:
-          GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "::error::Governance credential is not configured"
-            exit 1
-          fi
           gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
-          gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
+          gh api "repos/$GITHUB_REPOSITORY/rules/branches/main" > "$RUNNER_TEMP/rules.json"
       - name: Verify bootstrap repository protection
-        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/protection.json" bootstrap
+        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/rules.json" bootstrap
       - name: Run governance unit tests
         run: node --test tools/governance/governance.test.mjs
 
@@ -82,15 +74,11 @@ jobs:
           node-version: 22
       - name: Fetch live repository policy state
         env:
-          GH_TOKEN: ${{ secrets.NIMBUS_GOVERNANCE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "::error::Governance credential is not configured"
-            exit 1
-          fi
           gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
-          gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
+          gh api "repos/$GITHUB_REPOSITORY/rules/branches/main" > "$RUNNER_TEMP/rules.json"
       - name: Block release while bootstrap protection remains active
-        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/protection.json" stableRelease
+        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/rules.json" stableRelease
       - name: Run governance unit tests
         run: node --test tools/governance/governance.test.mjs

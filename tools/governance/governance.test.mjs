@@ -29,6 +29,7 @@ const validPolicy = {
   branchProtection: {
     bootstrap: {
       requiredApprovingReviews: 0,
+      requiredStatusChecks: ["validate"],
       dismissStaleReviews: false,
       requireCodeOwnerReviews: false,
       requireLastPushApproval: false,
@@ -39,6 +40,7 @@ const validPolicy = {
     },
     stableRelease: {
       requiredApprovingReviews: 1,
+      requiredStatusChecks: ["validate"],
       dismissStaleReviews: true,
       requireCodeOwnerReviews: true,
       requireLastPushApproval: true,
@@ -212,35 +214,22 @@ test("manual bootstrap dispatch executes a live bootstrap audit", () => {
   );
 });
 
-test("live audits use the dedicated administration-read credential", () => {
+test("live audits use effective branch rules without repository secrets", () => {
   const workflow = readFileSync(
     new URL("../../.github/workflows/repository-governance.yml", import.meta.url),
     "utf8",
   );
 
+  assert.doesNotMatch(workflow, /secrets\./);
+  assert.doesNotMatch(workflow, /NIMBUS_GOVERNANCE_TOKEN/);
+  assert.equal(workflow.match(/rules\/branches\/main/g)?.length, 2);
   assert.equal(
     workflow.match(/GH_TOKEN:\s*\$\{\{ github\.token \}\}/g)?.length,
-    1,
-  );
-  assert.equal(
-    workflow.match(/GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/g)?.length,
-    2,
-  );
-  assert.equal(
-    workflow.match(/Governance credential is not configured/g)?.length,
-    2,
-  );
-  assert.doesNotMatch(
-    workflow,
-    /runs-on: ubuntu-latest\s+env:\s+GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/,
-  );
-  assert.equal(
-    workflow.match(/- name: Fetch live repository policy state\s+env:\s+GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/g)?.length,
-    2,
+    3,
   );
 });
 
-test("blocks stable release while live settings still match bootstrap", () => {
+test("blocks stable release while effective rules still match bootstrap", () => {
   assert.deepEqual(
     validateLiveRepositorySettings({
       policy: validPolicy,
@@ -251,30 +240,39 @@ test("blocks stable release while live settings still match bootstrap", () => {
         allow_rebase_merge: false,
         delete_branch_on_merge: true,
       },
-      protection: {
-        required_pull_request_reviews: {
+      rules: [
+        {
+          type: "pull_request",
+          parameters: {
           required_approving_review_count: 0,
-          dismiss_stale_reviews: true,
-          require_code_owner_reviews: false,
+          dismiss_stale_reviews_on_push: true,
+          require_code_owner_review: false,
           require_last_push_approval: false,
+          required_review_thread_resolution: true,
+          allowed_merge_methods: ["squash"],
+          },
         },
-        required_linear_history: { enabled: true },
-        required_conversation_resolution: { enabled: true },
-        allow_force_pushes: { enabled: false },
-        allow_deletions: { enabled: false },
-        enforce_admins: { enabled: false },
-      },
+        { type: "required_linear_history" },
+        { type: "non_fast_forward" },
+        { type: "deletion" },
+        {
+          type: "required_status_checks",
+          parameters: {
+            strict_required_status_checks_policy: true,
+            required_status_checks: [{ context: "validate" }],
+          },
+        },
+      ],
     }),
     [
       "stableRelease requires at least 1 approving review",
       "stableRelease requires code-owner review",
       "stableRelease requires latest-push approval",
-      "stableRelease requires administrator enforcement",
     ],
   );
 });
 
-test("accepts live settings that meet the stable release phase", () => {
+test("accepts effective rules that meet the stable release phase", () => {
   assert.deepEqual(
     validateLiveRepositorySettings({
       policy: validPolicy,
@@ -285,20 +283,62 @@ test("accepts live settings that meet the stable release phase", () => {
         allow_rebase_merge: false,
         delete_branch_on_merge: true,
       },
-      protection: {
-        required_pull_request_reviews: {
+      rules: [
+        {
+          type: "pull_request",
+          parameters: {
           required_approving_review_count: 1,
-          dismiss_stale_reviews: true,
-          require_code_owner_reviews: true,
+          dismiss_stale_reviews_on_push: true,
+          require_code_owner_review: true,
           require_last_push_approval: true,
+          required_review_thread_resolution: true,
+          allowed_merge_methods: ["squash"],
+          },
         },
-        required_linear_history: { enabled: true },
-        required_conversation_resolution: { enabled: true },
-        allow_force_pushes: { enabled: false },
-        allow_deletions: { enabled: false },
-        enforce_admins: { enabled: true },
-      },
+        { type: "required_linear_history" },
+        { type: "non_fast_forward" },
+        { type: "deletion" },
+        {
+          type: "required_status_checks",
+          parameters: {
+            strict_required_status_checks_policy: true,
+            required_status_checks: [{ context: "validate" }],
+          },
+        },
+      ],
     }),
     [],
   );
+});
+
+test("rejects effective rules that omit a required status check", () => {
+  const errors = validateLiveRepositorySettings({
+    policy: validPolicy,
+    phase: "bootstrap",
+    repository: {
+      allow_squash_merge: true,
+      allow_merge_commit: false,
+      allow_rebase_merge: false,
+      delete_branch_on_merge: true,
+    },
+    rules: [
+      {
+        type: "pull_request",
+        parameters: {
+          required_approving_review_count: 0,
+          dismiss_stale_reviews_on_push: true,
+          require_code_owner_review: false,
+          require_last_push_approval: false,
+          required_review_thread_resolution: true,
+          allowed_merge_methods: ["squash"],
+        },
+      },
+      { type: "required_linear_history" },
+      { type: "non_fast_forward" },
+      { type: "deletion" },
+    ],
+  });
+
+  assert.ok(errors.includes("bootstrap requires status check validate"));
+  assert.ok(errors.includes("bootstrap requires strict status checks"));
 });

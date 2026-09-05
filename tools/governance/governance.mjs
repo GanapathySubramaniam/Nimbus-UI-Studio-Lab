@@ -57,6 +57,9 @@ export function validateRepositoryPolicy(policy) {
     if (!Number.isInteger(settings.requiredApprovingReviews) || settings.requiredApprovingReviews < 0) {
       errors.push(`branchProtection.${phase}.requiredApprovingReviews must be a non-negative integer`);
     }
+    if (!Array.isArray(settings.requiredStatusChecks) || settings.requiredStatusChecks.length === 0) {
+      errors.push(`branchProtection.${phase}.requiredStatusChecks must be a non-empty array`);
+    }
     for (const key of [
       "dismissStaleReviews",
       "requireCodeOwnerReviews",
@@ -114,41 +117,51 @@ export function validateFindingStatus({ headSha, findings }) {
   });
 }
 
-function booleanSetting(value) {
-  return typeof value === "object" && value !== null ? value.enabled : value;
-}
-
-export function validateLiveRepositorySettings({ policy, phase, repository, protection }) {
+export function validateLiveRepositorySettings({ policy, phase, repository, rules }) {
   const expected = policy.branchProtection[phase];
-  const actualReviews = protection.required_pull_request_reviews ?? {};
+  const activeRules = Array.isArray(rules) ? rules : [];
+  const ruleTypes = new Set(activeRules.map((rule) => rule.type));
+  const pullRequest = activeRules.find((rule) => rule.type === "pull_request")?.parameters ?? {};
+  const statusChecks = activeRules.find((rule) => rule.type === "required_status_checks")?.parameters ?? {};
+  const requiredContexts = new Set(
+    (statusChecks.required_status_checks ?? []).map((check) => check.context),
+  );
   const checks = [
     [repository.allow_squash_merge, policy.mergePolicy.allowSquashMerge, "squash merge setting"],
     [repository.allow_merge_commit, policy.mergePolicy.allowMergeCommit, "merge commit setting"],
     [repository.allow_rebase_merge, policy.mergePolicy.allowRebaseMerge, "rebase merge setting"],
     [repository.delete_branch_on_merge, policy.mergePolicy.deleteBranchOnMerge, "branch deletion after merge setting"],
-    [booleanSetting(protection.required_linear_history), policy.mergePolicy.linearHistory, "linear history setting"],
-    [booleanSetting(protection.required_conversation_resolution), expected.requireConversationResolution, `${phase} conversation resolution`],
-    [booleanSetting(protection.allow_force_pushes), expected.allowForcePushes, `${phase} force-push policy`],
-    [booleanSetting(protection.allow_deletions), expected.allowDeletions, `${phase} branch deletion policy`],
+    [ruleTypes.has("required_linear_history"), policy.mergePolicy.linearHistory, "linear history rule"],
+    [pullRequest.required_review_thread_resolution, expected.requireConversationResolution, `${phase} conversation resolution`],
+    [!ruleTypes.has("non_fast_forward"), expected.allowForcePushes, `${phase} force-push policy`],
+    [!ruleTypes.has("deletion"), expected.allowDeletions, `${phase} branch deletion policy`],
   ];
   const errors = checks.flatMap(([actual, wanted, label]) =>
     actual === wanted ? [] : [`${label} must be ${wanted}`],
   );
 
-  if ((actualReviews.required_approving_review_count ?? 0) < expected.requiredApprovingReviews) {
+  if ((pullRequest.required_approving_review_count ?? 0) < expected.requiredApprovingReviews) {
     errors.push(`${phase} requires at least ${expected.requiredApprovingReviews} approving review${expected.requiredApprovingReviews === 1 ? "" : "s"}`);
   }
-  if (expected.dismissStaleReviews && !actualReviews.dismiss_stale_reviews) {
+  if (expected.dismissStaleReviews && !pullRequest.dismiss_stale_reviews_on_push) {
     errors.push(`${phase} requires stale review dismissal`);
   }
-  if (expected.requireCodeOwnerReviews && !actualReviews.require_code_owner_reviews) {
+  if (expected.requireCodeOwnerReviews && !pullRequest.require_code_owner_review) {
     errors.push(`${phase} requires code-owner review`);
   }
-  if (expected.requireLastPushApproval && !actualReviews.require_last_push_approval) {
+  if (expected.requireLastPushApproval && !pullRequest.require_last_push_approval) {
     errors.push(`${phase} requires latest-push approval`);
   }
-  if (expected.enforceForAdministrators && !booleanSetting(protection.enforce_admins)) {
-    errors.push(`${phase} requires administrator enforcement`);
+  if (!pullRequest.allowed_merge_methods?.includes("squash")) {
+    errors.push(`${phase} requires squash as an allowed pull-request merge method`);
+  }
+  for (const context of expected.requiredStatusChecks) {
+    if (!requiredContexts.has(context)) {
+      errors.push(`${phase} requires status check ${context}`);
+    }
+  }
+  if (!statusChecks.strict_required_status_checks_policy) {
+    errors.push(`${phase} requires strict status checks`);
   }
   return errors;
 }
@@ -186,7 +199,7 @@ async function runCli() {
       validateLiveRepositorySettings({
         policy: readJson(args[0]),
         repository: readJson(args[1]),
-        protection: readJson(args[2]),
+        rules: readJson(args[2]),
         phase: args[3],
       }),
     );

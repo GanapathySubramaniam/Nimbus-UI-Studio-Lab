@@ -14,7 +14,9 @@ The policy separates `bootstrap` and `stableRelease` settings structurally. Befo
 - Code-owner review for shared public contracts.
 - Administrator enforcement.
 
-The `repository-governance / stable-release` workflow checks the live GitHub repository and branch-protection state and fails while those settings are absent. The approved release workflow must call this gate before package or Sites publication. Issue #111 tracks its integration into the final release pipeline.
+The `repository-governance / stable-release` workflow checks the live GitHub repository and effective branch rules and fails while those settings are absent. The approved release workflow must call this gate before package or Sites publication. Issue #111 tracks its integration into the final release pipeline.
+
+The active `Nimbus main governance` ruleset requires pull requests, the `validate` status check, strict up-to-date branches, resolved review threads, squash-only merges, linear history, and prevents branch deletion and non-fast-forward updates.
 
 ## Change path
 
@@ -41,7 +43,7 @@ Direct product commits to `main`, force pushes, branch deletion, undocumented de
 
 ## Required checks
 
-Required status checks are introduced by the workspace and CI issue after the workflows exist. A nonexistent status check must never be configured as required because that would make every pull request permanently unmergeable.
+The active bootstrap ruleset requires the existing `validate` status check. Additional checks are introduced only after their workflows exist; a nonexistent check must never be configured as required because that would make every pull request permanently unmergeable.
 
 The stable branch policy will ultimately require the aggregate checks for:
 
@@ -62,7 +64,7 @@ Secret scanning and push protection are required immediately. Private vulnerabil
 
 Credentials, authentication codes, model tokens, Sites source credentials, private user data, and hidden model reasoning must not appear in commits, issues, pull requests, Actions output, fixtures, snapshots, or AI-review prompts.
 
-The manual bootstrap audit and callable stable-release gate read classic branch protection through GitHub's administration API. The default Actions token cannot access that endpoint. Repository administrators must provision `NIMBUS_GOVERNANCE_TOKEN` as an Actions repository secret backed by a short-lived GitHub App installation token where practical, or a fine-grained token limited to this repository with Administration read permission. The workflow exposes the credential only to the API-fetch step, checks that it exists before making API calls, and never makes it available to checkout, Node validation, or test steps. Rotate or revoke the credential through GitHub; do not place it in source, workflow inputs, local configuration, issues, or pull-request text.
+The manual bootstrap audit and callable stable-release gate read the active rules that apply to `main` through GitHub's effective branch-rules API. That read requires only repository metadata access, so the workflow uses the ordinary short-lived Actions token and requires no repository credential secret. Nimbus never stores a personal access token for this audit. Ruleset creation or modification remains a maintainer operation performed through authenticated GitHub administration and is not delegated to pull-request code.
 
 ## Verification
 
