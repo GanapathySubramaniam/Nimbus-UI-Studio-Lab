@@ -1,45 +1,18 @@
-name: Implementation task
-description: Define one independently testable Nimbus delivery task.
-title: "[Task]: "
-labels: [feature]
-body:
-  - type: textarea
-    id: outcome
-    attributes: { label: Outcome, description: Describe the user or maintainer outcome. }
-    validations: { required: true }
-  - type: textarea
-    id: ownership
-    attributes: { label: Ownership, description: Name the packages, applications, and responsible component family. }
-    validations: { required: true }
-  - type: textarea
-    id: states
-    attributes: { label: States and recovery, description: Cover loading, empty, partial, offline, denied, failed, stale, and recovery states where applicable. }
-    validations: { required: true }
-  - type: textarea
-    id: responsive
-    attributes: { label: Responsive behavior, description: Define desktop, tablet, mobile, touch, zoom, and reflow behavior. }
-    validations: { required: true }
-  - type: textarea
-    id: accessibility
-    attributes: { label: Accessibility and keyboard contract, description: Define semantics, focus, keyboard, announcements, reduced-motion, contrast, and assistive-technology behavior. }
-    validations: { required: true }
-  - type: textarea
-    id: security
-    attributes: { label: Security and trust classification, description: Identify data classification, permissions, sanitization, privacy, and host responsibilities. }
-    validations: { required: true }
-  - type: textarea
-    id: api
-    attributes: { label: Public API and compatibility, description: List TypeScript, schema, token, CSS, DOM, event, adapter, and migration impact. }
-    validations: { required: true }
-  - type: textarea
-    id: tests
-    attributes: { label: Required tests, description: List unit, contract, accessibility, interaction, visual, browser, performance, and security tests. }
-    validations: { required: true }
-  - type: textarea
-    id: documentation
-    attributes: { label: Documentation and catalog updates, description: List taxonomy, coverage ledger, Storybook, examples, integration, and migration updates. }
-    validations: { required: true }
-  - type: textarea
-    id: acceptance
-    attributes: { label: Acceptance checklist, description: Provide objective completion conditions and explicit non-goals. }
-    validations: { required: true }
+{
+  "name": "Implementation task",
+  "description": "Define one independently testable Nimbus delivery task.",
+  "title": "[Task]: ",
+  "labels": ["feature"],
+  "body": [
+    { "type": "textarea", "id": "outcome", "attributes": { "label": "Outcome", "description": "Describe the user or maintainer outcome." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "ownership", "attributes": { "label": "Ownership", "description": "Name the packages, applications, and responsible component family." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "states", "attributes": { "label": "States and recovery", "description": "Cover loading, empty, partial, offline, denied, failed, stale, and recovery states where applicable." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "responsive", "attributes": { "label": "Responsive behavior", "description": "Define desktop, tablet, mobile, touch, zoom, and reflow behavior." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "accessibility", "attributes": { "label": "Accessibility and keyboard contract", "description": "Define semantics, focus, keyboard, announcements, reduced-motion, contrast, and assistive-technology behavior." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "security", "attributes": { "label": "Security and trust classification", "description": "Identify data classification, permissions, sanitization, privacy, and host responsibilities." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "api", "attributes": { "label": "Public API and compatibility", "description": "List TypeScript, schema, token, CSS, DOM, event, adapter, and migration impact." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "tests", "attributes": { "label": "Required tests", "description": "List unit, contract, accessibility, interaction, visual, browser, performance, and security tests." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "documentation", "attributes": { "label": "Documentation and catalog updates", "description": "List taxonomy, coverage ledger, Storybook, examples, integration, and migration updates." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "acceptance", "attributes": { "label": "Acceptance checklist", "description": "Provide objective completion conditions and explicit non-goals." }, "validations": { "required": true } }
+  ]
+}

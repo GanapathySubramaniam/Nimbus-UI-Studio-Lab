@@ -42,27 +42,29 @@ test("repository metadata declares required workflow labels", () => {
 });
 
 test("issue forms capture complete delivery and AI finding evidence", () => {
-  const task = read(".github/ISSUE_TEMPLATE/task.yml");
-  const finding = read(".github/ISSUE_TEMPLATE/ai-finding.yml");
-  const feature = read(".github/ISSUE_TEMPLATE/feature.yml");
-  const bug = read(".github/ISSUE_TEMPLATE/bug.yml");
+  const task = JSON.parse(read(".github/ISSUE_TEMPLATE/task.yml"));
+  const finding = JSON.parse(read(".github/ISSUE_TEMPLATE/ai-finding.yml"));
+  const feature = JSON.parse(read(".github/ISSUE_TEMPLATE/feature.yml"));
+  const bug = JSON.parse(read(".github/ISSUE_TEMPLATE/bug.yml"));
+
+  const ids = (form) => new Set(form.body.map(({ id }) => id).filter(Boolean));
 
   for (const field of [
     "outcome", "ownership", "states", "responsive", "accessibility", "security",
     "api", "tests", "documentation", "acceptance",
-  ]) assert.match(task, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
+  ]) assert.ok(ids(task).has(field), `task form is missing ${field}`);
 
   for (const field of [
     "source", "commit", "severity", "evidence", "impact", "resolution",
     "tests", "fingerprint",
-  ]) assert.match(finding, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
+  ]) assert.ok(ids(finding).has(field), `AI finding form is missing ${field}`);
 
-  assert.equal(finding.toLowerCase().includes("ai-found"), false);
+  assert.equal(finding.labels?.includes("ai-found") ?? false, false);
   for (const field of ["outcome", "scope", "states", "responsive", "accessibility", "security", "api", "tests", "documentation"]) {
-    assert.match(feature, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
+    assert.ok(ids(feature).has(field), `feature form is missing ${field}`);
   }
   for (const field of ["description", "reproduction", "expected", "environment", "evidence", "states", "quality", "regression"]) {
-    assert.match(bug, new RegExp(`^\\s+id:\\s*${field}\\s*$`, "m"));
+    assert.ok(ids(bug).has(field), `bug form is missing ${field}`);
   }
 });
 
