@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0.0",
+  "repository": "GanapathySubramaniam/Nimbus-UI-Studio-Lab",
+  "visibility": "public",
+  "defaultBranch": "main",
+  "mergePolicy": {
+    "allowSquashMerge": true,
+    "allowMergeCommit": false,
+    "allowRebaseMerge": false,
+    "deleteBranchOnMerge": true,
+    "linearHistory": true
+  },
+  "branchProtection": {
+    "requiredPullRequest": true,
+    "requiredApprovingReviewsDuringBootstrap": 0,
+    "requiredApprovingReviewsBeforeStableRelease": 1,
+    "dismissStaleReviews": true,
+    "requireConversationResolution": true,
+    "allowForcePushes": false,
+    "allowDeletions": false,
+    "enforceForAdministratorsDuringBootstrap": false,
+    "enforceForAdministratorsBeforeStableRelease": true
+  },
+  "security": {
+    "secretScanning": "required",
+    "secretScanningPushProtection": "required",
+    "privateVulnerabilityReporting": "required-before-stable-release",
+    "dependencyReview": "required-when-package-manifests-exist",
+    "automatedDependencyUpdates": "required-when-package-manifests-exist"
+  },
+  "changeControl": {
+    "issueRequired": true,
+    "dedicatedBranchRequired": true,
+    "pullRequestRequired": true,
+    "signedOffCommitsRequired": true,
+    "issueClosingReferenceRequired": true,
+    "publicContractChangesRequireChangeset": true,
+    "publicContractChangesRequireApiReport": true
+  },
+  "aiReview": {
+    "implementationAgent": "codex",
+    "functionalValidationModel": "antigravity-claude",
+    "qualitySecurityModel": "antigravity-gemini-pro",
+    "reviewModelsMayWriteImplementation": false,
+    "findingsMustReferenceCommit": true,
+    "findingsMustBeRevalidated": true
+  }
+}
