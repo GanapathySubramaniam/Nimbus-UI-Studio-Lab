@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import {
@@ -180,6 +181,34 @@ test("accepts a resolved finding revalidated against the head commit", () => {
       ],
     }),
     [],
+  );
+});
+
+test("reports malformed finding ledgers without throwing", () => {
+  assert.deepEqual(
+    validateFindingStatus({ headSha: "fixing-sha", findings: null }),
+    ["findings must be an array"],
+  );
+  assert.deepEqual(
+    validateFindingStatus({ headSha: "fixing-sha" }),
+    ["findings must be an array"],
+  );
+});
+
+test("manual bootstrap dispatch executes a live bootstrap audit", () => {
+  const workflow = readFileSync(
+    new URL("../../.github/workflows/repository-governance.yml", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(workflow, /^  bootstrap:/m);
+  assert.match(
+    workflow,
+    /github\.event_name == 'workflow_dispatch' && inputs\.phase == 'bootstrap'/,
+  );
+  assert.match(
+    workflow,
+    /governance\.mjs live .* bootstrap/,
   );
 });
 

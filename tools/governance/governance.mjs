@@ -97,6 +97,8 @@ export function validateCommitMessages(commits) {
 }
 
 export function validateFindingStatus({ headSha, findings }) {
+  if (!Array.isArray(findings)) return ["findings must be an array"];
+
   return findings.flatMap((finding) => {
     const severity = String(finding.severity ?? "").toLowerCase();
     if (!new Set(["blocker", "high"]).has(severity)) return [];
@@ -196,4 +198,3 @@ async function runCli() {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await runCli();
 }
-

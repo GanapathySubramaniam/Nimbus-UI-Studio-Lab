@@ -75,9 +75,8 @@
     "qualitySecurityModel": "antigravity-gemini-pro",
     "reviewModelsMayWriteImplementation": false,
     "findingGate": {
-      "status": "required-for-classified-changes",
+      "status": "deferred-until-finding-ledger",
       "trackingIssue": 116,
-      "check": "ai-review / findings-resolved",
       "exactCommitRequired": true,
       "revalidationRequired": true
     }

@@ -43,6 +43,26 @@ jobs:
       - name: Run governance unit tests
         run: node --test tools/governance/governance.test.mjs
 
+  bootstrap:
+    name: bootstrap
+    if: github.event_name == 'workflow_dispatch' && inputs.phase == 'bootstrap'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch live repository policy state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
+          gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
+      - name: Verify bootstrap repository protection
+        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/protection.json" bootstrap
+      - name: Run governance unit tests
+        run: node --test tools/governance/governance.test.mjs
+
   stable-release:
     name: stable-release
     if: github.event_name == 'workflow_call' || (github.event_name == 'workflow_dispatch' && inputs.phase == 'stableRelease')
@@ -62,4 +82,3 @@ jobs:
         run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/protection.json" stableRelease
       - name: Run governance unit tests
         run: node --test tools/governance/governance.test.mjs
-

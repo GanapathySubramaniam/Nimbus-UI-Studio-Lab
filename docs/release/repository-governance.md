@@ -54,7 +54,7 @@ The stable branch policy will ultimately require the aggregate checks for:
 - Dependency, license, provenance, secret, and security scans.
 - Antigravity validation status where the affected change requires it.
 
-The pull-request governance workflow enforces policy structure, issue-closing references, and Signed-off-by trailers immediately. Changeset and API-report enforcement activates when public packages exist and is tracked by issue #115. Commit-bound AI finding enforcement is tracked by issue #116; until it is automated, the maintainer records the reviewed and revalidated commits in the finding issue and PR summary.
+The pull-request governance workflow enforces policy structure, issue-closing references, and Signed-off-by trailers immediately. Changeset and API-report enforcement activates when public packages exist and is tracked by issue #115. Commit-bound AI finding enforcement is tracked by issue #116; until it is automated, the policy marks the gate as deferred and the maintainer records the reviewed and revalidated commits in the finding issue and PR summary.
 
 ## Security settings
 
