@@ -26,9 +26,22 @@ body:
     validations:
       required: true
   - type: textarea
-    id: quality
+    id: responsive
     attributes:
-      label: Accessibility, security, responsive, and localization requirements
+      label: Responsive and localization behavior
+      description: Cover desktop, tablet, phone, touch, locale expansion, and RTL.
+    validations:
+      required: true
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility and keyboard contract
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security, privacy, and trust classification
     validations:
       required: true
   - type: textarea
@@ -41,6 +54,13 @@ body:
     id: tests
     attributes:
       label: Test cases and acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation and catalog impact
+      description: List taxonomy, coverage-ledger, Storybook, integration, and migration updates.
     validations:
       required: true
 

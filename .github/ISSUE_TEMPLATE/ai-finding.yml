@@ -1,0 +1,37 @@
+name: AI review finding
+description: Record a sanitized, evidence-backed Antigravity review finding.
+title: "[AI finding]: "
+labels: [ai-found]
+body:
+  - type: input
+    id: source
+    attributes: { label: Source issue and pull request, placeholder: "Issue #123; PR #456" }
+    validations: { required: true }
+  - type: input
+    id: commit
+    attributes: { label: Reviewed commit, description: Exact immutable commit SHA. }
+    validations: { required: true }
+  - type: dropdown
+    id: severity
+    attributes: { label: Severity, options: [blocker, high, medium, low] }
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes: { label: Evidence, description: Provide sanitized paths, behavior, and reproduction evidence. Never include credentials or private reasoning. }
+    validations: { required: true }
+  - type: textarea
+    id: impact
+    attributes: { label: Impact, description: Explain affected users, systems, data, or release gates. }
+    validations: { required: true }
+  - type: textarea
+    id: resolution
+    attributes: { label: Proposed resolution, description: Describe the remediation approach without applying code. }
+    validations: { required: true }
+  - type: textarea
+    id: tests
+    attributes: { label: Required regression tests }
+    validations: { required: true }
+  - type: input
+    id: fingerprint
+    attributes: { label: Deduplication fingerprint, description: Stable source, path, category, and commit fingerprint. }
+    validations: { required: true }

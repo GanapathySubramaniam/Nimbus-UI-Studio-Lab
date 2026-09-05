@@ -1,0 +1,67 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { test } from "node:test";
+
+const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
+
+test("repository metadata declares every implementation milestone", () => {
+  const metadata = JSON.parse(read(".github/repository-metadata.json"));
+
+  assert.equal(metadata.schemaVersion, "1.0.0");
+  assert.deepEqual(
+    metadata.milestones.map(({ title }) => title),
+    [
+      "M0 — GitHub and governance",
+      "M1 — Workspace and contracts",
+      "M2 — Tokens and primitives",
+      "M3 — Studio and workbench",
+      "M4 — Forms, data, media, sandbox",
+      "M5 — Auth and enterprise shell",
+      "M6 — Agent conversation and runs",
+      "M7 — Agent platform and admin",
+      "M8 — Protocol adapters",
+      "M9 — PWA, locales, docs",
+      "M10 — Validation, 1.0, Sites",
+    ],
+  );
+});
+
+test("repository metadata declares required workflow labels", () => {
+  const metadata = JSON.parse(read(".github/repository-metadata.json"));
+  const names = new Set(metadata.labels.map(({ name }) => name));
+
+  for (const name of [
+    "epic", "feature", "bug", "ai-found", "governance", "public-api",
+    "accessibility", "security", "performance", "localization", "testing",
+    "release", "sites", "protocol", "experimental", "antigravity-claude",
+    "antigravity-gemini", "severity:blocker", "severity:high", "severity:medium",
+    "severity:low",
+  ]) {
+    assert.ok(names.has(name), `missing required label ${name}`);
+  }
+});
+
+test("issue forms capture complete delivery and AI finding evidence", () => {
+  const task = read(".github/ISSUE_TEMPLATE/task.yml");
+  const finding = read(".github/ISSUE_TEMPLATE/ai-finding.yml");
+
+  for (const field of [
+    "outcome", "ownership", "states", "responsive", "accessibility", "security",
+    "api", "tests", "documentation", "acceptance",
+  ]) assert.match(task, new RegExp(`id: ${field}`));
+
+  for (const field of [
+    "source", "commit", "severity", "evidence", "impact", "resolution",
+    "tests", "fingerprint",
+  ]) assert.match(finding, new RegExp(`id: ${field}`));
+});
+
+test("pull request template records every release-impact dimension", () => {
+  const template = read(".github/pull_request_template.md");
+
+  for (const phrase of [
+    "Closes #", "Public API", "Accessibility", "Security", "Responsive",
+    "Performance", "Localization", "Documentation", "Antigravity Claude",
+    "Antigravity Gemini Pro", "exact verified commit",
+  ]) assert.ok(template.includes(phrase), `missing PR prompt: ${phrase}`);
+});

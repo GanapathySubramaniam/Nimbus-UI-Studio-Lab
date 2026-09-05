@@ -15,11 +15,12 @@ Closes #
 
 ## Quality impact
 
-- Accessibility:
-- Security and trust boundary:
-- Responsive/mobile behavior:
+- Accessibility and keyboard behavior:
+- Security, privacy, and trust boundary:
+- Responsive/mobile/touch behavior:
 - Performance and bundle impact:
-- Localization/RTL:
+- Localization/RTL impact:
+- Documentation, taxonomy, and coverage-ledger impact:
 
 ## Verification
 
@@ -29,4 +30,5 @@ Closes #
 - [ ] Documentation and component coverage metadata are updated
 - [ ] Antigravity Claude validation is complete, where required
 - [ ] Antigravity Gemini Pro quality/security review is complete, where required
+- [ ] The exact verified commit SHA is recorded in the PR discussion
 
