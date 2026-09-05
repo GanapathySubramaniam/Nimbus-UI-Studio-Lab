@@ -1,41 +1,16 @@
-name: Bug report
-description: Report a reproducible defect that is not security-sensitive.
-title: "[Bug]: "
-labels:
-  - bug
-body:
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: What happened and why is it a defect?
-    validations:
-      required: true
-  - type: textarea
-    id: reproduction
-    attributes:
-      label: Reproduction
-      description: Provide the smallest reproducible sequence.
-    validations:
-      required: true
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behavior
-    validations:
-      required: true
-  - type: textarea
-    id: environment
-    attributes:
-      label: Environment
-      description: Nimbus version, browser, operating system, theme, locale, and assistive technology where relevant.
-    validations:
-      required: true
-  - type: textarea
-    id: evidence
-    attributes:
-      label: Evidence
-      description: Include sanitized logs, screenshots, or failing tests. Do not include credentials or private data.
-    validations:
-      required: true
-
+{
+  "name": "Bug report",
+  "description": "Report a reproducible defect that is not security-sensitive.",
+  "title": "[Bug]: ",
+  "labels": ["bug"],
+  "body": [
+    { "type": "textarea", "id": "description", "attributes": { "label": "Description", "description": "What happened and why is it a defect?" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "reproduction", "attributes": { "label": "Reproduction", "description": "Provide the smallest reproducible sequence." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "expected", "attributes": { "label": "Expected behavior" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "environment", "attributes": { "label": "Environment", "description": "Nimbus version, browser, operating system, theme, locale, and assistive technology where relevant." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "evidence", "attributes": { "label": "Evidence", "description": "Include sanitized logs, screenshots, or failing tests. Do not include credentials or private data." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "states", "attributes": { "label": "Affected states and recovery", "description": "Cover loading, empty, partial, offline, denied, failed, stale, and recovery behavior where relevant." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "quality", "attributes": { "label": "Accessibility, security, responsive, and localization impact", "description": "Include keyboard, assistive technology, privacy, permissions, mobile, locale, and RTL impact." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "regression", "attributes": { "label": "Required regression tests and documentation", "description": "List tests, taxonomy, coverage-ledger, Storybook, examples, and release-note changes." }, "validations": { "required": true } }
+  ]
+}

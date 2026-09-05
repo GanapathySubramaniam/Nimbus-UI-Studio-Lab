@@ -1,46 +1,17 @@
-name: Feature or component
-description: Propose an independently testable Nimbus capability.
-title: "[Feature]: "
-labels:
-  - feature
-body:
-  - type: textarea
-    id: outcome
-    attributes:
-      label: Outcome
-      description: What should users or maintainers be able to do?
-    validations:
-      required: true
-  - type: textarea
-    id: scope
-    attributes:
-      label: Scope and boundaries
-      description: Identify packages, applications, included behavior, and explicit non-goals.
-    validations:
-      required: true
-  - type: textarea
-    id: states
-    attributes:
-      label: States and recovery
-      description: Cover loading, empty, partial, offline, denied, failed, and recovery behavior where applicable.
-    validations:
-      required: true
-  - type: textarea
-    id: quality
-    attributes:
-      label: Accessibility, security, responsive, and localization requirements
-    validations:
-      required: true
-  - type: textarea
-    id: api
-    attributes:
-      label: Public API and compatibility impact
-    validations:
-      required: true
-  - type: textarea
-    id: tests
-    attributes:
-      label: Test cases and acceptance criteria
-    validations:
-      required: true
-
+{
+  "name": "Feature or component",
+  "description": "Propose an independently testable Nimbus capability.",
+  "title": "[Feature]: ",
+  "labels": ["feature"],
+  "body": [
+    { "type": "textarea", "id": "outcome", "attributes": { "label": "Outcome", "description": "What should users or maintainers be able to do?" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "scope", "attributes": { "label": "Scope and boundaries", "description": "Identify packages, applications, included behavior, and explicit non-goals." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "states", "attributes": { "label": "States and recovery", "description": "Cover loading, empty, partial, offline, denied, failed, stale, and recovery behavior." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "responsive", "attributes": { "label": "Responsive and localization behavior", "description": "Cover desktop, tablet, phone, touch, locale expansion, and RTL." }, "validations": { "required": true } },
+    { "type": "textarea", "id": "accessibility", "attributes": { "label": "Accessibility and keyboard contract" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "security", "attributes": { "label": "Security, privacy, and trust classification" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "api", "attributes": { "label": "Public API and compatibility impact" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "tests", "attributes": { "label": "Test cases and acceptance criteria" }, "validations": { "required": true } },
+    { "type": "textarea", "id": "documentation", "attributes": { "label": "Documentation and catalog impact", "description": "List taxonomy, coverage-ledger, Storybook, integration, and migration updates." }, "validations": { "required": true } }
+  ]
+}
