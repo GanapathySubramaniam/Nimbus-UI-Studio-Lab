@@ -31,7 +31,7 @@ test("repository metadata declares required workflow labels", () => {
   const names = new Set(metadata.labels.map(({ name }) => name));
 
   for (const name of [
-    "epic", "feature", "bug", "ai-found", "governance", "public-api",
+    "epic", "feature", "bug", "ai-found", "architecture", "governance", "public-api",
     "accessibility", "security", "performance", "localization", "testing",
     "release", "sites", "protocol", "experimental", "antigravity-claude",
     "antigravity-gemini", "severity:blocker", "severity:high", "severity:medium",
@@ -44,6 +44,8 @@ test("repository metadata declares required workflow labels", () => {
 test("issue forms capture complete delivery and AI finding evidence", () => {
   const task = read(".github/ISSUE_TEMPLATE/task.yml");
   const finding = read(".github/ISSUE_TEMPLATE/ai-finding.yml");
+  const feature = read(".github/ISSUE_TEMPLATE/feature.yml");
+  const bug = read(".github/ISSUE_TEMPLATE/bug.yml");
 
   for (const field of [
     "outcome", "ownership", "states", "responsive", "accessibility", "security",
@@ -54,6 +56,22 @@ test("issue forms capture complete delivery and AI finding evidence", () => {
     "source", "commit", "severity", "evidence", "impact", "resolution",
     "tests", "fingerprint",
   ]) assert.match(finding, new RegExp(`id: ${field}`));
+
+  assert.doesNotMatch(finding, /^labels:\s*\[ai-found\]/m);
+  for (const field of ["outcome", "scope", "states", "responsive", "accessibility", "security", "api", "tests", "documentation"]) {
+    assert.match(feature, new RegExp(`id: ${field}`));
+  }
+  for (const field of ["description", "reproduction", "expected", "environment", "evidence", "states", "quality", "regression"]) {
+    assert.match(bug, new RegExp(`id: ${field}`));
+  }
+});
+
+test("workflow names every required governance test explicitly", () => {
+  const workflow = read(".github/workflows/repository-governance.yml");
+  const command = "node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs";
+
+  assert.equal(workflow.split(command).length - 1, 3);
+  assert.doesNotMatch(workflow, /tools\/governance\/\*\.test\.mjs/);
 });
 
 test("pull request template records every release-impact dimension", () => {

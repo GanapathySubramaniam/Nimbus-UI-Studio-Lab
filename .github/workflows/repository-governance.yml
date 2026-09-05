@@ -41,7 +41,7 @@ jobs:
       - name: Require Signed-off-by trailers
         run: node tools/governance/governance.mjs commits "$RUNNER_TEMP/commits.json"
       - name: Run governance unit tests
-        run: node --test tools/governance/*.test.mjs
+        run: node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs
 
   bootstrap:
     name: bootstrap
@@ -61,7 +61,7 @@ jobs:
       - name: Verify bootstrap repository protection
         run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/rules.json" bootstrap
       - name: Run governance unit tests
-        run: node --test tools/governance/*.test.mjs
+        run: node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs
 
   stable-release:
     name: stable-release
@@ -81,4 +81,4 @@ jobs:
       - name: Block release while bootstrap protection remains active
         run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/rules.json" stableRelease
       - name: Run governance unit tests
-        run: node --test tools/governance/*.test.mjs
+        run: node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs

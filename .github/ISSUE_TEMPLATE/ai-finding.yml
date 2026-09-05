@@ -1,7 +1,6 @@
 name: AI review finding
 description: Record a sanitized, evidence-backed Antigravity review finding.
 title: "[AI finding]: "
-labels: [ai-found]
 body:
   - type: input
     id: source
