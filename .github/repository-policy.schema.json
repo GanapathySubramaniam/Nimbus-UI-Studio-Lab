@@ -4,13 +4,23 @@
   "title": "Nimbus repository policy",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "repository", "visibility", "defaultBranch", "lifecycle", "mergePolicy", "branchProtection", "security", "changeControl", "aiReview"],
+  "required": ["schemaVersion", "repository", "visibility", "defaultBranch", "ruleset", "lifecycle", "mergePolicy", "branchProtection", "security", "changeControl", "aiReview"],
   "properties": {
     "$schema": { "type": "string" },
     "schemaVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
     "repository": { "const": "GanapathySubramaniam/Nimbus-UI-Studio-Lab" },
     "visibility": { "const": "public" },
     "defaultBranch": { "const": "main" },
+    "ruleset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "targetRef"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "name": { "const": "Nimbus main governance" },
+        "targetRef": { "const": "refs/heads/main" }
+      }
+    },
     "lifecycle": {
       "type": "object",
       "additionalProperties": false,

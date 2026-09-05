@@ -66,6 +66,8 @@ Credentials, authentication codes, model tokens, Sites source credentials, priva
 
 The manual bootstrap audit and callable stable-release gate read the active rules that apply to `main` through GitHub's effective branch-rules API. That read requires only repository metadata access, so the workflow uses the ordinary short-lived Actions token and requires no repository credential secret. Nimbus never stores a personal access token for this audit. Ruleset creation or modification remains a maintainer operation performed through authenticated GitHub administration and is not delegated to pull-request code.
 
+The effective-rules API intentionally omits bypass-actor administration. Before package or Sites publication, the release-owning maintainer must use their existing authenticated GitHub CLI session to fetch ruleset `22357934` and run `node tools/governance/governance.mjs ruleset .github/repository-policy.json <ruleset-json-path> stableRelease`. This local gate rejects the wrong ruleset, inactive enforcement, a target other than `main`, an API response that omits bypass actors, or any configured bypass actor. The JSON response contains policy metadata, not authentication material, and must be deleted after validation. No token is copied into the repository, Actions, a command argument, an issue, or a release artifact.
+
 ## Verification
 
 Maintainers verify live settings with GitHub CLI and compare them to `.github/repository-policy.json`. A mismatch opens a governance issue; it is not silently accepted as a new policy.

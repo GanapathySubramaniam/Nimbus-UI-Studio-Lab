@@ -4,6 +4,11 @@
   "repository": "GanapathySubramaniam/Nimbus-UI-Studio-Lab",
   "visibility": "public",
   "defaultBranch": "main",
+  "ruleset": {
+    "id": 22357934,
+    "name": "Nimbus main governance",
+    "targetRef": "refs/heads/main"
+  },
   "lifecycle": {
     "activePhase": "bootstrap",
     "stableReleaseRequiresPhase": "stableRelease"

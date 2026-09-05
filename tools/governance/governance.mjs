@@ -7,6 +7,7 @@ const topLevelPolicyProperties = new Set([
   "repository",
   "visibility",
   "defaultBranch",
+  "ruleset",
   "lifecycle",
   "mergePolicy",
   "branchProtection",
@@ -40,6 +41,15 @@ export function validateRepositoryPolicy(policy) {
   }
   if (typeof policy.repository !== "string" || !policy.repository.includes("/")) {
     errors.push("repository must be an owner/name string");
+  }
+  if (!Number.isInteger(policy.ruleset?.id) || policy.ruleset.id < 1) {
+    errors.push("ruleset.id must be a positive integer");
+  }
+  if (typeof policy.ruleset?.name !== "string" || policy.ruleset.name.length === 0) {
+    errors.push("ruleset.name must be a non-empty string");
+  }
+  if (policy.ruleset?.targetRef !== "refs/heads/main") {
+    errors.push("ruleset.targetRef must be refs/heads/main");
   }
   if (!phases.has(policy.lifecycle?.activePhase)) {
     errors.push("lifecycle.activePhase must be bootstrap or stableRelease");
@@ -166,6 +176,25 @@ export function validateLiveRepositorySettings({ policy, phase, repository, rule
   return errors;
 }
 
+export function validateRulesetAdministration({ policy, phase, ruleset }) {
+  const errors = [];
+  if (ruleset?.id !== policy.ruleset.id) errors.push(`ruleset id must be ${policy.ruleset.id}`);
+  if (ruleset?.name !== policy.ruleset.name) errors.push(`ruleset name must be ${policy.ruleset.name}`);
+  if (ruleset?.enforcement !== "active") errors.push("ruleset enforcement must be active");
+  if (!ruleset?.conditions?.ref_name?.include?.includes(policy.ruleset.targetRef)) {
+    errors.push(`ruleset must include ${policy.ruleset.targetRef}`);
+  }
+  if (!Array.isArray(ruleset?.bypass_actors)) {
+    errors.push("authenticated ruleset response must expose bypass actors");
+  } else if (
+    policy.branchProtection[phase].enforceForAdministrators &&
+    ruleset.bypass_actors.length > 0
+  ) {
+    errors.push(`${phase} prohibits ruleset bypass actors`);
+  }
+  return errors;
+}
+
 function failOnErrors(errors) {
   if (errors.length === 0) return;
   for (const error of errors) console.error(`governance: ${error}`);
@@ -205,7 +234,17 @@ async function runCli() {
     );
     return;
   }
-  throw new Error("usage: governance.mjs policy|pr-event|commits|live [...arguments]");
+  if (command === "ruleset") {
+    failOnErrors(
+      validateRulesetAdministration({
+        policy: readJson(args[0]),
+        ruleset: readJson(args[1]),
+        phase: args[2],
+      }),
+    );
+    return;
+  }
+  throw new Error("usage: governance.mjs policy|pr-event|commits|live|ruleset [...arguments]");
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

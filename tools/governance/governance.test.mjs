@@ -8,6 +8,7 @@ import {
   validateLiveRepositorySettings,
   validatePullRequestBody,
   validateRepositoryPolicy,
+  validateRulesetAdministration,
 } from "./governance.mjs";
 
 const validPolicy = {
@@ -15,6 +16,11 @@ const validPolicy = {
   repository: "GanapathySubramaniam/Nimbus-UI-Studio-Lab",
   visibility: "public",
   defaultBranch: "main",
+  ruleset: {
+    id: 22357934,
+    name: "Nimbus main governance",
+    targetRef: "refs/heads/main",
+  },
   lifecycle: {
     activePhase: "bootstrap",
     stableReleaseRequiresPhase: "stableRelease",
@@ -341,4 +347,58 @@ test("rejects effective rules that omit a required status check", () => {
 
   assert.ok(errors.includes("bootstrap requires status check validate"));
   assert.ok(errors.includes("bootstrap requires strict status checks"));
+});
+
+test("stable release rejects a ruleset bypass actor", () => {
+  assert.deepEqual(
+    validateRulesetAdministration({
+      policy: validPolicy,
+      phase: "stableRelease",
+      ruleset: {
+        id: 22357934,
+        name: "Nimbus main governance",
+        enforcement: "active",
+        bypass_actors: [{ actor_id: 1, actor_type: "RepositoryRole" }],
+        conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } },
+      },
+    }),
+    ["stableRelease prohibits ruleset bypass actors"],
+  );
+});
+
+test("ruleset administration audit rejects inactive and wrong-target rulesets", () => {
+  assert.deepEqual(
+    validateRulesetAdministration({
+      policy: validPolicy,
+      phase: "bootstrap",
+      ruleset: {
+        id: 22357934,
+        name: "Nimbus main governance",
+        enforcement: "evaluate",
+        bypass_actors: [],
+        conditions: { ref_name: { include: ["refs/heads/dev"], exclude: [] } },
+      },
+    }),
+    [
+      "ruleset enforcement must be active",
+      "ruleset must include refs/heads/main",
+    ],
+  );
+});
+
+test("ruleset administration audit accepts the active main ruleset without bypasses", () => {
+  assert.deepEqual(
+    validateRulesetAdministration({
+      policy: validPolicy,
+      phase: "stableRelease",
+      ruleset: {
+        id: 22357934,
+        name: "Nimbus main governance",
+        enforcement: "active",
+        bypass_actors: [],
+        conditions: { ref_name: { include: ["refs/heads/main"], exclude: [] } },
+      },
+    }),
+    [],
+  );
 });
