@@ -1,4 +1,5 @@
 node_modules/
+.next/
 .turbo/
 .cache/
 dist/
@@ -7,6 +8,8 @@ out/
 coverage/
 playwright-report/
 test-results/
+.playwright-cli/
+output/playwright/
 storybook-static/
 .env
 .env.*
