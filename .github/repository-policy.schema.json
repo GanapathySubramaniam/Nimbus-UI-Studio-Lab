@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GanapathySubramaniam/Nimbus-UI-Studio-Lab/blob/main/.github/repository-policy.schema.json",
+  "title": "Nimbus repository policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "repository", "visibility", "defaultBranch", "lifecycle", "mergePolicy", "branchProtection", "security", "changeControl", "aiReview"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "repository": { "const": "GanapathySubramaniam/Nimbus-UI-Studio-Lab" },
+    "visibility": { "const": "public" },
+    "defaultBranch": { "const": "main" },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activePhase", "stableReleaseRequiresPhase"],
+      "properties": {
+        "activePhase": { "enum": ["bootstrap", "stableRelease"] },
+        "stableReleaseRequiresPhase": { "const": "stableRelease" }
+      }
+    },
+    "mergePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowSquashMerge", "allowMergeCommit", "allowRebaseMerge", "deleteBranchOnMerge", "linearHistory"],
+      "properties": {
+        "allowSquashMerge": { "const": true },
+        "allowMergeCommit": { "const": false },
+        "allowRebaseMerge": { "const": false },
+        "deleteBranchOnMerge": { "const": true },
+        "linearHistory": { "const": true }
+      }
+    },
+    "branchProtection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bootstrap", "stableRelease"],
+      "properties": {
+        "bootstrap": { "$ref": "#/$defs/protection" },
+        "stableRelease": { "$ref": "#/$defs/protection" }
+      }
+    },
+    "security": { "type": "object" },
+    "changeControl": { "type": "object" },
+    "aiReview": { "type": "object" }
+  },
+  "$defs": {
+    "protection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredApprovingReviews", "dismissStaleReviews", "requireCodeOwnerReviews", "requireLastPushApproval", "requireConversationResolution", "allowForcePushes", "allowDeletions", "enforceForAdministrators"],
+      "properties": {
+        "requiredApprovingReviews": { "type": "integer", "minimum": 0 },
+        "dismissStaleReviews": { "type": "boolean" },
+        "requireCodeOwnerReviews": { "type": "boolean" },
+        "requireLastPushApproval": { "type": "boolean" },
+        "requireConversationResolution": { "type": "boolean" },
+        "allowForcePushes": { "type": "boolean" },
+        "allowDeletions": { "type": "boolean" },
+        "enforceForAdministrators": { "type": "boolean" }
+      }
+    }
+  }
+}
+

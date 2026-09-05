@@ -1,0 +1,65 @@
+name: repository-governance
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Repository policy phase to verify
+        required: true
+        default: stableRelease
+        type: choice
+        options: [bootstrap, stableRelease]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    name: validate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate repository policy
+        run: node tools/governance/governance.mjs policy .github/repository-policy.json
+      - name: Require a closing issue reference
+        run: node tools/governance/governance.mjs pr-event "$GITHUB_EVENT_PATH"
+      - name: Fetch pull request commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/commits?per_page=100" --paginate > "$RUNNER_TEMP/commits.json"
+      - name: Require Signed-off-by trailers
+        run: node tools/governance/governance.mjs commits "$RUNNER_TEMP/commits.json"
+      - name: Run governance unit tests
+        run: node --test tools/governance/governance.test.mjs
+
+  stable-release:
+    name: stable-release
+    if: github.event_name == 'workflow_call' || (github.event_name == 'workflow_dispatch' && inputs.phase == 'stableRelease')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch live repository policy state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY" > "$RUNNER_TEMP/repository.json"
+          gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > "$RUNNER_TEMP/protection.json"
+      - name: Block release while bootstrap protection remains active
+        run: node tools/governance/governance.mjs live .github/repository-policy.json "$RUNNER_TEMP/repository.json" "$RUNNER_TEMP/protection.json" stableRelease
+      - name: Run governance unit tests
+        run: node --test tools/governance/governance.test.mjs
+

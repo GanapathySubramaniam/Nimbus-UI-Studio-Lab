@@ -1,12 +1,12 @@
 # Repository governance baseline
 
-This document records the repository settings that protect Nimbus UI Studio Lab development. The machine-readable source of truth is [`.github/repository-policy.json`](../../.github/repository-policy.json).
+This document records the repository settings that protect Nimbus UI Studio Lab development. The machine-readable source of truth is [`.github/repository-policy.json`](../../.github/repository-policy.json), validated by its [JSON Schema](../../.github/repository-policy.schema.json) and the repository-governance workflow.
 
 ## Bootstrap state
 
 Nimbus currently has one repository identity with administrative access. During bootstrap, `main` requires pull requests but does not require an approving review because GitHub does not allow an author to approve their own pull request. Administrator enforcement also remains disabled so the maintainer can recover from a broken initial policy or unavailable required check.
 
-Before the first stable release, the project must add an independent reviewer or organization rule set and change the policy to require:
+The policy separates `bootstrap` and `stableRelease` settings structurally. Before the first stable release, the project must add an independent reviewer or organization rule set, select the stable-release phase, and require:
 
 - At least one approving review.
 - Dismissal of stale approvals.
@@ -14,7 +14,7 @@ Before the first stable release, the project must add an independent reviewer or
 - Code-owner review for shared public contracts.
 - Administrator enforcement.
 
-The stable release is blocked until those settings are active and verified.
+The `repository-governance / stable-release` workflow checks the live GitHub repository and branch-protection state and fails while those settings are absent. The approved release workflow must call this gate before package or Sites publication. Issue #111 tracks its integration into the final release pipeline.
 
 ## Change path
 
@@ -46,12 +46,15 @@ Required status checks are introduced by the workspace and CI issue after the wo
 The stable branch policy will ultimately require the aggregate checks for:
 
 - Repository policy and issue linkage.
+- Signed-off commit trailers for every commit in a pull request.
 - Type checking and linting.
 - Unit, component, contract, accessibility, visual, and end-to-end tests.
 - API and schema compatibility.
 - Bundle and performance budgets.
 - Dependency, license, provenance, secret, and security scans.
 - Antigravity validation status where the affected change requires it.
+
+The pull-request governance workflow enforces policy structure, issue-closing references, and Signed-off-by trailers immediately. Changeset and API-report enforcement activates when public packages exist and is tracked by issue #115. Commit-bound AI finding enforcement is tracked by issue #116; until it is automated, the maintainer records the reviewed and revalidated commits in the finding issue and PR summary.
 
 ## Security settings
 
@@ -64,4 +67,3 @@ Credentials, authentication codes, model tokens, Sites source credentials, priva
 Maintainers verify live settings with GitHub CLI and compare them to `.github/repository-policy.json`. A mismatch opens a governance issue; it is not silently accepted as a new policy.
 
 The verification must record only non-secret settings. `gh auth status` output and token material must never be pasted into an issue or pull request.
-
