@@ -212,6 +212,26 @@ test("manual bootstrap dispatch executes a live bootstrap audit", () => {
   );
 });
 
+test("live audits use the dedicated administration-read credential", () => {
+  const workflow = readFileSync(
+    new URL("../../.github/workflows/repository-governance.yml", import.meta.url),
+    "utf8",
+  );
+
+  assert.equal(
+    workflow.match(/GH_TOKEN:\s*\$\{\{ github\.token \}\}/g)?.length,
+    1,
+  );
+  assert.equal(
+    workflow.match(/GH_TOKEN:\s*\$\{\{ secrets\.NIMBUS_GOVERNANCE_TOKEN \}\}/g)?.length,
+    2,
+  );
+  assert.equal(
+    workflow.match(/Governance credential is not configured/g)?.length,
+    2,
+  );
+});
+
 test("blocks stable release while live settings still match bootstrap", () => {
   assert.deepEqual(
     validateLiveRepositorySettings({

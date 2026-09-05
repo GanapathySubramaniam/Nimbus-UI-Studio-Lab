@@ -62,6 +62,8 @@ Secret scanning and push protection are required immediately. Private vulnerabil
 
 Credentials, authentication codes, model tokens, Sites source credentials, private user data, and hidden model reasoning must not appear in commits, issues, pull requests, Actions output, fixtures, snapshots, or AI-review prompts.
 
+The manual bootstrap audit and callable stable-release gate read classic branch protection through GitHub's administration API. The default Actions token cannot access that endpoint. Repository administrators must provision `NIMBUS_GOVERNANCE_TOKEN` as an Actions repository secret backed by a short-lived GitHub App installation token where practical, or a fine-grained token limited to this repository with Administration read permission. The workflow checks that the secret exists before making API calls and never prints its value. Rotate or revoke the credential through GitHub; do not place it in source, workflow inputs, local configuration, issues, or pull-request text.
+
 ## Verification
 
 Maintainers verify live settings with GitHub CLI and compare them to `.github/repository-policy.json`. A mismatch opens a governance issue; it is not silently accepted as a new policy.

@@ -40,6 +40,7 @@
   "security": {
     "secretScanning": "required",
     "secretScanningPushProtection": "required",
+    "liveGovernanceCredential": "repository-secret-with-administration-read",
     "privateVulnerabilityReporting": "required-before-stable-release",
     "dependencyReview": "required-when-package-manifests-exist",
     "automatedDependencyUpdates": "required-when-package-manifests-exist"
