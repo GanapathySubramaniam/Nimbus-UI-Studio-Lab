@@ -11,12 +11,18 @@
     "pnpm": ">=12.3.4 <13"
   },
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "test": "node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs tools/workspace/workspace.test.mjs tools/workspace/typescript-config.test.mjs tools/workspace/reference-apps.test.mjs tools/workspace/sites-config.test.mjs && turbo run test",
+    "setup": "node tools/local/setup.mjs",
+    "build": "pnpm studio:sync-runtime && turbo run build",
+    "dev": "node tools/local/start.mjs",
+    "test": "node --test tools/governance/governance.test.mjs tools/governance/contributor-metadata.test.mjs tools/workspace/workspace.test.mjs tools/workspace/typescript-config.test.mjs tools/workspace/reference-apps.test.mjs tools/workspace/sites-config.test.mjs && node --experimental-strip-types --test tools/studio/*.test.ts tools/local/*.test.ts && turbo run test",
+    "test:studio": "node --experimental-strip-types --test tools/studio/*.test.ts",
+    "test:local": "node --experimental-strip-types --test tools/local/*.test.ts",
+    "test:install": "node --experimental-strip-types tools/local/clean-install-check.mjs",
+    "studio:sync-runtime": "node --experimental-strip-types tools/studio/package-export.test.ts --sync-runtime",
+    "studio": "npm run studio:sync-runtime && npm exec --yes --package=pnpm@12.3.4 --call \"pnpm --filter @nimbus-ui-studio/reference-vite dev --host 127.0.0.1 --port 5173\"",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "typecheck": "tsc -p tools/local/tsconfig.json && turbo run typecheck",
+    "check": "pnpm studio:sync-runtime && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "turbo run clean"
   },
   "devDependencies": {

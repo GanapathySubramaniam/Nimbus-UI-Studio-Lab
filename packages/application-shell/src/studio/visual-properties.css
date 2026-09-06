@@ -1,0 +1,91 @@
+.vp-background,
+.vp-text,
+.vp-logo,
+.vp-actions,
+.vp-motion,
+.vp-disclosure-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.vp-color {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 8px;
+  align-items: end;
+}
+.vp-color input[type="color"] {
+  width: 100%;
+  height: 32px;
+  padding: 2px;
+}
+.vp-color > input {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  border: 1px solid #dedfe3;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fff;
+  color: #30343d;
+  font: inherit;
+}
+.vp-stops,
+.vp-nav-items {
+  display: grid;
+  gap: 10px;
+}
+.vp-stop,
+.vp-nav-item {
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafb;
+}
+.vp-stop-position {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.vp-disclosure {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.vp-disclosure summary {
+  padding: 11px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.vp-disclosure summary > span {
+  float: right;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 400;
+}
+.vp-disclosure-body {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+.vp-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.vp-background input[type="file"] {
+  max-width: 100%;
+  font-size: 11px;
+}
+.vp-background :focus-visible,
+.vp-text :focus-visible,
+.vp-actions :focus-visible,
+.vp-logo :focus-visible,
+.vp-motion :focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}

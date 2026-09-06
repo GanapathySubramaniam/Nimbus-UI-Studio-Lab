@@ -55,18 +55,5 @@ test("both applications are configured for static Sites artifacts", () => {
   assert.match(nextConfig, /images:\s*\{\s*unoptimized:\s*true/);
 });
 
-test("the shared Studio lets users edit components and canvas backgrounds", () => {
-  const shell = read("packages/application-shell/src/nimbus-application-shell.tsx");
-
-  assert.match(shell, /Live component canvas/);
-  assert.match(shell, /setComponent/);
-  assert.match(shell, /setBackground/);
-  assert.match(shell, /setLabel/);
-  assert.match(shell, /setComponentRadius/);
-  assert.match(shell, /Graphite/);
-  assert.match(shell, /Cool gray/);
-  assert.match(shell, /Studio paper/);
-  assert.match(shell, /Deep void/);
-  assert.match(shell, /navigator\.clipboard\.writeText/);
-  assert.match(shell, /Component code copied to clipboard/);
-});
+// Visual-editor behavior coverage belongs in tools/studio as the old
+// ComponentLab shell is replaced; workspace tests do not grep its source.
