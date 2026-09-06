@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { createRequire } from 'node:module';
@@ -9,13 +9,18 @@ import { createLocalServer } from './server.ts';
 
 // Own both listeners in one process: no shell process trees or orphaned database daemon.
 let api: ReturnType<typeof createLocalServer> | undefined;
-let studio: { close(): Promise<void> } | undefined;
+let studio: { close(): Promise<void>; environments: Record<string, { close(): Promise<void> }> } | undefined;
 let stopping: Promise<void> | undefined;
 let startupFinished = false;
 let shutdownRequested = false;
 function stop(code = 0) {
   stopping ??= (async () => {
-    if (studio) await studio.close();
+    if (studio) {
+      // Drain cold-start transforms before Vite closes its watcher. Vite 8.2.2
+      // closes these in parallel; a late addWatchFile can reopen that watcher.
+      await Promise.all(Object.values(studio.environments).map(environment => environment.close()));
+      await studio.close();
+    }
     if (api?.listening) {
       api.closeAllConnections();
       await new Promise<void>(resolve => api!.close(() => resolve()));
@@ -40,7 +45,7 @@ try {
   const { values } = parseArgs({ options: { port: { type: 'string', default: '5173' }, 'api-port': { type: 'string', default: '4317' }, database: { type: 'string', default: fileURLToPath(new URL('../../.nimbus/studio.sqlite', import.meta.url)) } } });
   const port = Number(values.port), apiPort = Number(values['api-port']);
   if (![port, apiPort].every(value => Number.isInteger(value) && value >= 0 && value <= 65535)) throw new Error('Ports must be integers from 0 to 65535.');
-  const app = fileURLToPath(new URL('../../apps/reference-vite/', import.meta.url));
+  const app = realpathSync.native(fileURLToPath(new URL('../../apps/reference-vite/', import.meta.url)));
   if (!existsSync(new URL('../../apps/reference-vite/node_modules/vite/package.json', import.meta.url))) throw new Error('Dependencies are missing. Run npm run setup first.');
   const require = createRequire(new URL('../../apps/reference-vite/package.json', import.meta.url));
   const vite = await import(pathToFileURL(require.resolve('vite')).href);

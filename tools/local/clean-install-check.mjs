@@ -39,7 +39,9 @@ try {
   const database = join(fixture, '.nimbus', 'studio.sqlite');
   assert.equal(readFileSync(database).subarray(0, 16).toString(), 'SQLite format 3\0');
   stage = 'start public launcher'; console.log(`Clean-install stage: ${stage}`);
-  child = fork(join(fixture, 'tools/local/start.mjs'), ['--port', '0', '--api-port', '0'], { cwd: fixture, execArgv: [], silent: true });
+  // CI disables Vite's stdin-end process.exit fallback, so this proves that
+  // our launcher releases cold-start resources and exits naturally itself.
+  child = fork(join(fixture, 'tools/local/start.mjs'), ['--port', '0', '--api-port', '0'], { cwd: fixture, execArgv: [], silent: true, env: { ...process.env, CI: 'true' } });
   child.stdout.on('data', data => { logs += data; process.stdout.write(data); }); child.stderr.on('data', data => { logs += data; process.stderr.write(data); });
   const exited = once(child, 'exit');
   const [ready] = await bounded(Promise.race([once(child, 'message'), exited.then(() => { throw new Error(`Clean start failed: ${logs}`); })]), 'readiness');
