@@ -6,9 +6,9 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "tsc --noEmit",
+    "lint": "next typegen && tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@nimbus-ui-studio/application-shell": "workspace:*",

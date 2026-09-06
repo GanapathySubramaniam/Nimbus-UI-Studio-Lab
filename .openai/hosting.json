@@ -1,0 +1,6 @@
+{
+  "project_id": "appgprj_6a9cab880df88191aa226898df0372a5",
+  "static": {
+    "directory": "apps/reference-vite/dist"
+  }
+}
