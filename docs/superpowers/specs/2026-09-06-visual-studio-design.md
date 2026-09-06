@@ -1,0 +1,11 @@
+# Nimbus visual page studio
+
+The user authorizes an architectural redesign in the existing Documents/project/nimbusUI/Nimbus-UI-Studio-Lab checkout. The editor is a neutral off-white professional tool, with a widget library and layers on the left, an editable single-page canvas in the middle, and a property inspector on the right. Widget design presets are independent of the editor chrome and independent of one another.
+
+Use a typed, versioned document model; explicit widget catalog; pure shared renderer; renderer-based HTML and React exports; isolated per-widget styling; bounded undo history; validated local persistence and project import/export. Compared with iframe-per-widget rendering (costly and awkward for editing) or a full external editor framework (large integration and export dependency), this owned document/renderer approach provides deterministic output and straightforward portability. Native controls provide browser semantics. Desktop geometry is explicit; mobile export stacks visible widgets in layer order.
+
+Clone VoltAgent/awesome-design-md outside Nimbus. Convert the collection into attributed numeric/color/type presets, never ship the markdown analysis or third-party logos. Preserve MIT attribution for adapted data. Presets are interpretations, not official design systems. No upstream push or publication.
+
+Scope: catalog insertion via click and drag, free positioning, resize, snapping, keyboard nudging, editable text/style/layout/state/motion, image and sidebar logo upload, reorder/duplicate/hide/lock/delete, desktop/tablet/mobile previews, reusable starter pages, undo/redo, local save, validated JSON import/export, standalone HTML and React code copy/download. Export visuals use the exact same renderer and CSS as the canvas. Native inputs, accordions and checkboxes remain functional in preview/export; business widgets are editable UI samples, not connected backend services.
+
+Acceptance: behavior tests cover validation, history and export escaping; browser exercise covers adding two dissimilar presets, editing, move/resize, undo, reload, image, preview and export. Type checks and both framework builds must pass. UI must have keyboard alternatives for drag, visible focus, labeled controls, reduced-motion support, and honest save/error states. No certification of enterprise backend readiness.
