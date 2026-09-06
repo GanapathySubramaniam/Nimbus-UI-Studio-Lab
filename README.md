@@ -1,5 +1,7 @@
 # Nimbus UI Studio Lab
 
+![Nimbus UI Studio Lab logo: a leopard and mountain mark](docs/media/nimbus-studio-logo.jpg)
+
 Nimbus is a local-first visual prototype builder for dashboard and agentic-product interfaces. Arrange widgets across linked pages, mix design presets, customize content, backgrounds and motion, then preview full-screen and export a React app package or standalone HTML.
 
 ## Watch the Studio demo
