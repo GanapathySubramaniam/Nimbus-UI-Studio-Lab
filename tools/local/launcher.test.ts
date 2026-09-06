@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
 import { once } from 'node:events';
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { mkdtemp, mkdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -24,7 +24,7 @@ test('database location refuses public assets and extensions outside the private
   const publicDir = join(tmpdir(), 'nimbus-public');
   assert.throws(() => resolveDatabasePath(join(publicDir, 'private.sqlite'), publicDir), /outside/);
   assert.throws(() => resolveDatabasePath(join(tmpdir(), 'private.json'), publicDir), /sqlite/);
-  assert.equal(resolveDatabasePath(join(tmpdir(), 'private.sqlite'), publicDir), join(tmpdir(), 'private.sqlite'));
+  assert.equal(resolveDatabasePath(join(tmpdir(), 'private.sqlite'), publicDir), join(realpathSync.native(tmpdir()), 'private.sqlite'));
 });
 
 test('one-process launcher creates SQLite, serves Studio and API, and frees both ports on shutdown', { timeout: 45_000 }, async (t) => {

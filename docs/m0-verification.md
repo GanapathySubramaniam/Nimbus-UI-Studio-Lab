@@ -31,4 +31,6 @@ One intermediate full run timed out in the launcher test; diagnostic stage loggi
 
 ## Remaining release gate
 
-Commit the reviewed source; run the clean Git-clone install/start check against that commit; open the closing PR and require hosted Windows/Ubuntu plus governance checks; merge without bypassing repository rules. Only then close M0. M1–M11 remain active as recorded in the delivery ledger.
+Commit `96ed9d5` is in [PR #139](https://github.com/GanapathySubramaniam/Nimbus-UI-Studio-Lab/pull/139). A separate actual Git clone installed with `npm run setup`, then served the editor and SQLite health endpoint through the public launcher on ports 5184/4318. Its fresh browser session loaded the editor with zero console errors or warnings.
+
+Hosted Windows testing exposed a short-path/canonical-path mismatch in a test expectation (100 passed, one failed); the expectation now canonicalizes the existing temporary parent. Six CodeQL annotations in test-only HTML extraction/absence and attribution checks were addressed with case-insensitive tag checks and exact source-line equality, without exclusions. The follow-up passed all 101 studio/local tests and the full workspace check locally; James returned scoped PASS. Hosted reruns and merge remain required. M1–M11 remain active as recorded in the delivery ledger.

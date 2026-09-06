@@ -168,7 +168,7 @@ if (process.argv.includes("--sync-runtime")) {
     assert.ok(!html.includes('<script>globalThis.pwned'));
     assert.match(html, /Second page/);
     const payload = html.match(/<script id="nimbus-data" type="application\/json">([\s\S]*?)<\/script>/)![1]!;
-    const script = html.match(/<script>([\s\S]*?)<\/script>/)![1]!;
+    const script = html.match(/<script>([\s\S]*?)<\/script>/i)![1]!;
     const listeners: Record<string, (event: unknown) => void> = {};
     const host = { innerHTML: "", querySelectorAll: () => [], querySelector: () => null,
       addEventListener: (type: string, handler: (event: unknown) => void) => { listeners[type] = handler; } };
@@ -191,7 +191,7 @@ if (process.argv.includes("--sync-runtime")) {
     const input = project();
     const html = exporter.exportProjectHtml(input, "first");
     const payload = html.match(/<script id="nimbus-data" type="application\/json">([\s\S]*?)<\/script>/)![1]!;
-    const script = html.match(/<script>([\s\S]*?)<\/script>/)![1]!;
+    const script = html.match(/<script>([\s\S]*?)<\/script>/i)![1]!;
     const listeners: Record<string, (event: unknown) => void> = {};
     const documentListeners: Record<string, (event: unknown) => void> = {};
     const messages: unknown[] = [];
@@ -218,7 +218,7 @@ if (process.argv.includes("--sync-runtime")) {
     const input = project();
     const html = exporter.exportProjectHtml(input);
     const payload = html.match(/<script id="nimbus-data" type="application\/json">([\s\S]*?)<\/script>/)![1]!;
-    const script = html.match(/<script>([\s\S]*?)<\/script>/)![1]!;
+    const script = html.match(/<script>([\s\S]*?)<\/script>/i)![1]!;
     const listeners: Record<string, (event: unknown) => void> = {};
     const host = { innerHTML: "", querySelectorAll: () => [], querySelector: () => null,
       addEventListener: (type: string, handler: (event: unknown) => void) => { listeners[type] = handler; } };

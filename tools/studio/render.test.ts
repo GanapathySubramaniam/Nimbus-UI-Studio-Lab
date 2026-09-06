@@ -391,7 +391,7 @@ test("exports embed identical shared rendering and CSS and safely serialize TSX 
   assert.match(html, /name="viewport"/);
   assert.ok(html.includes(renderPage(doc)));
   assert.ok(html.includes(WIDGET_CSS));
-  assert.doesNotMatch(html, /<script>/);
+  assert.doesNotMatch(html, /<script(?:\s|>)/i);
   const react = exportReact(doc);
   assert.match(react, /export default function/);
   assert.doesNotMatch(react, /import .*nimbus/i);
@@ -401,7 +401,7 @@ test("exports embed identical shared rendering and CSS and safely serialize TSX 
   assert.ok(htmlLiteral && cssLiteral);
   assert.equal(JSON.parse(htmlLiteral[1]!), renderPage(doc));
   assert.equal(JSON.parse(cssLiteral[1]!), WIDGET_CSS);
-  assert.doesNotMatch(react, /\u2028|<script>/);
+  assert.doesNotMatch(react, /\u2028|<script(?:\s|>)/i);
 });
 
 test("exports retain the complete pinned MIT attribution in comments without Markdown", () => {
@@ -431,8 +431,9 @@ test("exports retain the complete pinned MIT attribution in comments without Mar
       comment.includes(mit),
       "Full upstream copyright, permission and warranty text must survive export",
     );
-    assert.ok(
-      comment.includes("https://github.com/VoltAgent/awesome-design-md"),
+    assert.equal(
+      comment.split("\n").find((line) => line.startsWith("Source: ")),
+      "Source: https://github.com/VoltAgent/awesome-design-md",
     );
     assert.ok(comment.includes(commit));
     assert.doesNotMatch(comment, /```|^\s*#|\]\(https?:/m);

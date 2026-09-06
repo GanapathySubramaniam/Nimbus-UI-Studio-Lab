@@ -6,7 +6,7 @@ Authority: [GOAL.md](../../GOAL.md), copied verbatim from the user's 2026-09-06 
 
 | Milestone | Current evidence | Missing exit evidence / next work |
 | --- | --- | --- |
-| M0 local foundation | Real SQLite schema, migrations, 75 current preset seeds, revisioned HTTP CRUD, setup/dev commands; 24 local tests; source-snapshot install/start/write/reopen gate passes. Issue #138, branch feat/m0-local-foundation. | Independent review closure, clean Git-clone install, commit/PR/merge. UI persistence remains M3. |
+| M0 local foundation | Real SQLite schema, migrations, 75 current preset seeds, revisioned HTTP CRUD, setup/dev commands; 39 local tests plus 62 studio tests; source-snapshot durability and actual Git-clone install/start pass. Independent review PASS. Issue #138, PR #139, branch feat/m0-local-foundation. | Hosted Windows/Ubuntu and CodeQL reruns, then merge. UI persistence remains M3. |
 | M1 75 token archetypes | Existing 75 legacy style presets retained and stored. | Required descriptive names/original complete tokens, both themes, swatch sheets and contrast audit. Existing brand-inspired names do not meet the new spec. |
 | M2 native widgets and fidelity | Shared HTML renderer and compile/export tests exist. | Real `nimbus-ui` React Button/Card/Stat, canvas/export screenshot comparison >0.99 SSIM or <1% differing pixels across 75 presets and both themes. String/roundtrip tests are not fidelity proof. |
 | M3 canvas/persistence | Working flat canvas gestures, selection, browser IndexedDB persistence. SQLite API now available. | Hierarchical node editing and SQLite client wiring/migration with every editable field restored after restart. |
@@ -23,7 +23,7 @@ Authority: [GOAL.md](../../GOAL.md), copied verbatim from the user's 2026-09-06 
 
 - Keep all 75 styles and 17 designed page templates while adding the 12 complete project starters; these are different catalogs.
 - Preserve existing user projects and uncommitted editor work. No destructive reset or replacement of the saved checkout.
-- The current installation gate is a clean source snapshot, not yet a Git clone of a committed milestone. Do not interchange those claims.
+- Both a fresh source-snapshot durability check and an actual separate Git-clone install/start check were run. The latter used commit `96ed9d5`; hosted checks must validate the final PR revision before merge.
 - Protocol adapters, accounts, cloud collaboration, telemetry, hosting, SSR/PWA and additional locales are explicitly outside this design/export release. Existing issues for those features are not marked complete by this work.
 - No registry package publication is assumed. M9 must provide an honest runnable local-package path and avoid an `npm install nimbus-ui` instruction that resolves unrelated code.
 - Current Apache licensing/third-party MIT notices are preserved pending the explicit MIT transition audit; a package field change alone is not relicensing evidence.

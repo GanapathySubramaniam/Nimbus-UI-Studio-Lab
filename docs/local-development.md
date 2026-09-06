@@ -13,7 +13,7 @@ Setup installs the pinned workspace dependencies and creates/migrates `.nimbus/s
 
 Start serves the editor at `http://127.0.0.1:5173` and the database HTTP service at `http://127.0.0.1:4317`. Both listeners run in one process, bind only to loopback, and close on Ctrl+C. No external database executable, cloud service, account or `.env` is required. The first installation uses the network; normal startup does not download dependencies. Node 22.16 prints experimental notices for its built-in SQLite and TypeScript stripping APIs; these are Node runtime notices, not browser console errors.
 
-If a port is occupied, stop the other instance or use `npm run dev -- --port 5180 --api-port 4318`. Do not expose this development service on a public interface. The server validates Host/Origin, does not allow permissive CORS, caps request bodies, and uses optimistic revisions. It is a single-user local tool, not an authenticated multi-tenant server.
+If a port is occupied, stop the other instance or use `node tools/local/start.mjs --port 5180 --api-port 4318`. On Windows, use `npm.cmd run dev -- --port 5180 --api-port 4318` if forwarding arguments through npm; the PowerShell npm wrapper can drop these named flags. The default `npm run dev` needs no arguments. Do not expose this development service on a public interface. The server validates Host/Origin, does not allow permissive CORS, caps request bodies, and uses optimistic revisions. It is a single-user local tool, not an authenticated multi-tenant server.
 
 ## Storage boundary
 
