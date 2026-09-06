@@ -15,6 +15,8 @@ test("Vite and Next references pin the approved React stack", () => {
   assert.equal(next.dependencies.react, "19.2.8");
   assert.equal(next.dependencies.next, "16.3.4");
   assert.equal(next.scripts.build, "next build");
+  assert.equal(next.scripts.typecheck, "next typegen && tsc --noEmit");
+  assert.equal(next.scripts.lint, "next typegen && tsc --noEmit");
 });
 
 test("both references consume one shared application shell and journey catalog", () => {
