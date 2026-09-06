@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import { CanvasStudio } from "./canvas-studio";
 
 export interface NimbusApplicationShellProps {
   readonly journeyCount: number;
@@ -56,190 +57,6 @@ const runSteps = [
   { label: "Policy check", meta: "Passed", state: "complete" },
   { label: "Synthesizing brief", meta: "Active", state: "active" },
 ];
-
-type EditableComponent = "action" | "agent-card" | "prompt-field";
-type CanvasBackground = "grid" | "aurora" | "paper" | "void";
-
-function ComponentLab() {
-  const [component, setComponent] = useState<EditableComponent>("action");
-  const [background, setBackground] = useState<CanvasBackground>("grid");
-  const [label, setLabel] = useState("Launch agent run");
-  const [variant, setVariant] = useState<"solid" | "outline" | "ghost">(
-    "solid",
-  );
-  const [componentRadius, setComponentRadius] = useState(14);
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
-    "idle",
-  );
-  const previewStyle = {
-    "--component-radius": `${componentRadius}px`,
-  } as CSSProperties;
-  const componentName =
-    component === "action"
-      ? "Button"
-      : component === "agent-card"
-        ? "AgentCard"
-        : "PromptField";
-  const code = `<${componentName} variant="${variant}" radius={${componentRadius}} label=${JSON.stringify(label)} />`;
-
-  async function copyCode() {
-    try {
-      if (!navigator.clipboard) throw new Error("Clipboard access unavailable");
-      await navigator.clipboard.writeText(code);
-      setCopyState("copied");
-    } catch {
-      setCopyState("error");
-    }
-  }
-
-  return (
-    <section
-      className="nimbus-panel nimbus-component-lab"
-      aria-labelledby="component-lab-title"
-    >
-      <div className="nimbus-panel-head">
-        <div>
-          <p className="nimbus-overline">Component library</p>
-          <h2 id="component-lab-title">Live component canvas</h2>
-        </div>
-        <span className="nimbus-lab-status">
-          <i /> EDITABLE
-        </span>
-      </div>
-      <div className="nimbus-lab-grid">
-        <div className={`nimbus-canvas is-${background}`} style={previewStyle}>
-          <div className="nimbus-canvas-toolbar">
-            <span>PREVIEW / DEFAULT</span>
-            <div>
-              <i />
-              <i />
-              <i />
-            </div>
-          </div>
-          <div className="nimbus-preview-stage">
-            {component === "action" && (
-              <button
-                className={`nimbus-preview-action is-${variant}`}
-                type="button"
-              >
-                {label}
-                <span aria-hidden="true">↗</span>
-              </button>
-            )}
-            {component === "agent-card" && (
-              <article className={`nimbus-preview-card is-${variant}`}>
-                <div className="nimbus-preview-agent">N</div>
-                <div>
-                  <small>RESEARCH AGENT</small>
-                  <h3>{label}</h3>
-                  <p>Ready · 12 tools connected</p>
-                </div>
-                <span className="nimbus-status-dot" />
-              </article>
-            )}
-            {component === "prompt-field" && (
-              <label className={`nimbus-preview-field is-${variant}`}>
-                <span>Prompt instruction</span>
-                <div>
-                  <input
-                    defaultValue={label}
-                    aria-label="Preview prompt instruction"
-                  />
-                  <button type="button">↑</button>
-                </div>
-                <small>⌘ Enter to run · 2,048 tokens available</small>
-              </label>
-            )}
-          </div>
-          <div className="nimbus-canvas-footer">
-            <span>390 × 220</span>
-            <span>100%</span>
-          </div>
-        </div>
-        <form
-          className="nimbus-lab-controls"
-          onSubmit={(event) => event.preventDefault()}
-        >
-          <div className="nimbus-field-pair">
-            <label>
-              Component
-              <select
-                value={component}
-                onChange={(event) =>
-                  setComponent(event.target.value as EditableComponent)
-                }
-              >
-                <option value="action">Action button</option>
-                <option value="agent-card">Agent card</option>
-                <option value="prompt-field">Prompt field</option>
-              </select>
-            </label>
-            <label>
-              Background
-              <select
-                value={background}
-                onChange={(event) =>
-                  setBackground(event.target.value as CanvasBackground)
-                }
-              >
-                <option value="grid">Graphite</option>
-                <option value="aurora">Cool gray</option>
-                <option value="paper">Studio paper</option>
-                <option value="void">Deep void</option>
-              </select>
-            </label>
-          </div>
-          <label className="nimbus-edit-label">
-            Content
-            <input
-              value={label}
-              maxLength={42}
-              onChange={(event) => setLabel(event.target.value)}
-            />
-          </label>
-          <fieldset>
-            <legend>Variant</legend>
-            <div className="nimbus-segmented">
-              {(["solid", "outline", "ghost"] as const).map((item) => (
-                <button
-                  aria-pressed={variant === item}
-                  key={item}
-                  onClick={() => setVariant(item)}
-                  type="button"
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <label className="nimbus-edit-label nimbus-radius-editor">
-            <span>
-              Component radius <output>{componentRadius}px</output>
-            </span>
-            <input
-              min="2"
-              max="30"
-              type="range"
-              value={componentRadius}
-              onChange={(event) =>
-                setComponentRadius(Number(event.target.value))
-              }
-            />
-          </label>
-          <div className="nimbus-code-line">
-            <code>{code}</code>
-            <button type="button" onClick={() => void copyCode()} aria-label="Copy component code">
-              {copyState === "copied" ? "Copied" : copyState === "error" ? "Retry" : "Copy"}
-            </button>
-            <span className="nimbus-sr-only" aria-live="polite">
-              {copyState === "copied" ? "Component code copied to clipboard" : copyState === "error" ? "Could not copy component code" : ""}
-            </span>
-          </div>
-        </form>
-      </div>
-    </section>
-  );
-}
 
 export function NimbusApplicationShell({
   journeyCount,
@@ -371,7 +188,7 @@ export function NimbusApplicationShell({
           </button>
         </section>
 
-        <ComponentLab />
+        <CanvasStudio />
 
         <section className="nimbus-metrics" aria-label="Workspace metrics">
           <article>
