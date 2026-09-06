@@ -2,6 +2,14 @@
 
 Nimbus is a local-first visual prototype builder for dashboard and agentic-product interfaces. Arrange widgets across linked pages, mix design presets, customize content, backgrounds and motion, then preview full-screen and export a React app package or standalone HTML.
 
+## Watch the Studio demo
+
+[![Watch the Nimbus UI Studio screen-recorded demo](docs/media/nimbus-studio-demo.jpg)](docs/media/nimbus-studio-demo.mp4)
+
+[Watch or download the MP4](docs/media/nimbus-studio-demo.mp4) — a 57-second recording of the running application, not a mockup (H.264, approximately 1.7 MB). It shows editing widget text and values, browsing the 75-style Token Studio in light and dark, applying a style, exploring the 17 page templates, switching between desktop and mobile preview, and downloading a React ZIP. Recorded at 1600 × 900 on September 6, 2026; silent video.
+
+The recording demonstrates the current editor and existing export runtime. It does not claim that the upcoming native `nimbus-ui` component/export fidelity milestone is complete.
+
 ## Run the studio
 
 Requires Node.js 22.16 or newer. From this repository:
