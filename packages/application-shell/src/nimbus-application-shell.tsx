@@ -1,672 +1,134 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 
 export interface NimbusApplicationShellProps {
   readonly journeyCount: number;
   readonly runtime: "Vite" | "Next.js";
 }
 
-interface Palette {
-  readonly accent: string;
-  readonly accentRgb: string;
-  readonly label: string;
-  readonly secondary: string;
-}
+type IconName = "activity" | "agent" | "arrow" | "bell" | "blocks" | "check" | "chevron" | "code" | "copy" | "frame" | "menu" | "message" | "plus" | "search" | "send" | "settings" | "spark" | "tokens";
 
-type NimbusStyle = CSSProperties & {
-  "--nimbus-accent": string;
-  "--nimbus-accent-rgb": string;
-  "--nimbus-radius": string;
-  "--nimbus-secondary": string;
+const iconPaths: Record<IconName, ReactNode> = {
+  activity: <path d="M3 12h4l2.5-6 4 12 2.5-6H21" />,
+  agent: <><rect x="5" y="5" width="14" height="14" rx="4" /><path d="M9 9h.01M15 9h.01M9 15h6M12 2v3" /></>,
+  arrow: <path d="M5 12h14m-5-5 5 5-5 5" />,
+  bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>,
+  blocks: <><rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="8" rx="2" /><rect x="3" y="13" width="8" height="8" rx="2" /><rect x="13" y="13" width="8" height="8" rx="2" /></>,
+  check: <path d="m5 12 4 4L19 6" />,
+  chevron: <path d="m9 18 6-6-6-6" />,
+  code: <path d="m8 9-4 3 4 3m8-6 4 3-4 3m-3-9-2 12" />,
+  copy: <><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></>,
+  frame: <><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" /><rect x="8" y="8" width="8" height="8" rx="2" /></>,
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  message: <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></>,
+  send: <path d="m4 12 16-8-6 16-2-6zM12 14l8-10" />,
+  settings: <><circle cx="12" cy="12" r="3" /><path d="M19 15.2a1.8 1.8 0 0 0 .4 2l-2.2 2.2a1.8 1.8 0 0 0-2-.4 1.8 1.8 0 0 0-1.2 1.7V21h-4v-.3A1.8 1.8 0 0 0 8.8 19a1.8 1.8 0 0 0-2 .4l-2.2-2.2a1.8 1.8 0 0 0 .4-2A1.8 1.8 0 0 0 3.3 14H3v-4h.3A1.8 1.8 0 0 0 5 8.8a1.8 1.8 0 0 0-.4-2l2.2-2.2a1.8 1.8 0 0 0 2 .4A1.8 1.8 0 0 0 10 3.3V3h4v.3A1.8 1.8 0 0 0 15.2 5a1.8 1.8 0 0 0 2-.4l2.2 2.2a1.8 1.8 0 0 0-.4 2 1.8 1.8 0 0 0 1.7 1.2h.3v4h-.3a1.8 1.8 0 0 0-1.7 1.2Z" /></>,
+  spark: <path d="m12 3 1.4 4.1 4.1 1.4-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4zM18.5 14l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />,
+  tokens: <><circle cx="8" cy="8" r="4" /><circle cx="16" cy="16" r="4" /><path d="M12 8h5a3 3 0 0 1 3 3v1M12 16H7a3 3 0 0 1-3-3v-1" /></>,
 };
 
-const palettes = {
-  aurora: {
-    accent: "#62f6d2",
-    secondary: "#7a8cff",
-    accentRgb: "98, 246, 210",
-    label: "Mint",
-  },
-  ember: {
-    accent: "#ffb86b",
-    secondary: "#ff6b8a",
-    accentRgb: "255, 184, 107",
-    label: "Amber",
-  },
-  cobalt: {
-    accent: "#74a7ff",
-    secondary: "#a881ff",
-    accentRgb: "116, 167, 255",
-    label: "Blue",
-  },
-} as const satisfies Record<string, Palette>;
+function Icon({ name, size = 18 }: { readonly name: IconName; readonly size?: number }) {
+  return <svg aria-hidden="true" className="nimbus-icon" fill="none" height={size} viewBox="0 0 24 24" width={size}>{iconPaths[name]}</svg>;
+}
 
-const navigation = [
-  "Command center",
-  "Conversations",
-  "Agents",
-  "Workflows",
-  "Knowledge",
-  "Evaluations",
-];
-const runSteps = [
-  { label: "Intent mapped", meta: "0.4s", state: "complete" },
-  { label: "Sources retrieved", meta: "12 records", state: "complete" },
-  { label: "Policy check", meta: "Passed", state: "complete" },
-  { label: "Synthesizing brief", meta: "Active", state: "active" },
-];
+const palettes = {
+  blue: { accent: "#3157d5", soft: "#eef2ff", label: "Blue" },
+  indigo: { accent: "#5746af", soft: "#f1effb", label: "Indigo" },
+  teal: { accent: "#08777f", soft: "#e7f5f4", label: "Teal" },
+} as const;
 
 type EditableComponent = "action" | "agent-card" | "prompt-field";
-type CanvasBackground = "grid" | "aurora" | "paper" | "void";
+type CanvasBackground = "white" | "soft" | "slate" | "ink";
+type Variant = "solid" | "outline" | "quiet";
 
-function ComponentLab() {
+const componentCatalog: ReadonlyArray<{ id: EditableComponent; name: string; description: string; icon: IconName }> = [
+  { id: "action", name: "Button", description: "Actions and commands", icon: "arrow" },
+  { id: "agent-card", name: "Agent card", description: "Agent identity and health", icon: "agent" },
+  { id: "prompt-field", name: "Prompt field", description: "Agent instructions", icon: "message" },
+];
+
+function componentCode(component: EditableComponent, variant: Variant, radius: number, label: string) {
+  const safeLabel = JSON.stringify(label);
+  if (component === "agent-card") return `import { AgentCard } from "@nimbus-ui-studio/agent-ui";\n\n<AgentCard\n  name=${safeLabel}\n  status="available"\n  tools={12}\n  variant="${variant}"\n  radius={${radius}}\n/>`;
+  if (component === "prompt-field") return `import { PromptField } from "@nimbus-ui-studio/agent-ui";\n\n<PromptField\n  label="Prompt instruction"\n  defaultValue=${safeLabel}\n  variant="${variant}"\n  radius={${radius}}\n  onSubmit={handleSubmit}\n/>`;
+  return `import { Button } from "@nimbus-ui-studio/primitives";\n\n<Button\n  variant="${variant}"\n  radius={${radius}}\n  trailingIcon="arrow-right"\n>\n  ${label}\n</Button>`;
+}
+
+function ComponentPreview({ component, label, variant }: { readonly component: EditableComponent; readonly label: string; readonly variant: Variant }) {
+  if (component === "agent-card") return <article className={`nimbus-preview-card is-${variant}`}><div className="nimbus-agent-avatar"><Icon name="agent" size={20} /></div><div><small>RESEARCH OPERATIONS</small><h3>{label}</h3><p><span /> Available · 12 tools connected</p></div><button aria-label="Open agent details" type="button"><Icon name="chevron" size={16} /></button></article>;
+  if (component === "prompt-field") return <div className={`nimbus-preview-field is-${variant}`}><label htmlFor="preview-prompt">Prompt instruction</label><div><input defaultValue={label} id="preview-prompt" /><button aria-label="Send prompt" type="button"><Icon name="send" size={16} /></button></div><footer><span>Use / for commands</span><span>2,048 tokens</span></footer></div>;
+  return <button className={`nimbus-preview-action is-${variant}`} type="button"><span>{label}</span><Icon name="arrow" size={16} /></button>;
+}
+
+function ComponentLab({ accent }: { readonly accent: string }) {
   const [component, setComponent] = useState<EditableComponent>("action");
-  const [background, setBackground] = useState<CanvasBackground>("grid");
+  const [background, setBackground] = useState<CanvasBackground>("soft");
   const [label, setLabel] = useState("Launch agent run");
-  const [variant, setVariant] = useState<"solid" | "outline" | "ghost">(
-    "solid",
-  );
-  const [componentRadius, setComponentRadius] = useState(14);
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
-    "idle",
-  );
-  const previewStyle = {
-    "--component-radius": `${componentRadius}px`,
-  } as CSSProperties;
-  const componentName =
-    component === "action"
-      ? "Button"
-      : component === "agent-card"
-        ? "AgentCard"
-        : "PromptField";
-  const code = `<${componentName} variant="${variant}" radius={${componentRadius}} label=${JSON.stringify(label)} />`;
+  const [variant, setVariant] = useState<Variant>("solid");
+  const [componentRadius, setComponentRadius] = useState(10);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const code = componentCode(component, variant, componentRadius, label);
+  const previewStyle = { "--component-radius": `${componentRadius}px`, "--component-accent": accent } as CSSProperties;
 
   async function copyCode() {
     try {
       if (!navigator.clipboard) throw new Error("Clipboard access unavailable");
       await navigator.clipboard.writeText(code);
       setCopyState("copied");
-    } catch {
-      setCopyState("error");
-    }
+      window.setTimeout(() => setCopyState("idle"), 1800);
+    } catch { setCopyState("error"); }
   }
 
-  return (
-    <section
-      className="nimbus-panel nimbus-component-lab"
-      aria-labelledby="component-lab-title"
-    >
-      <div className="nimbus-panel-head">
-        <div>
-          <p className="nimbus-overline">Component library</p>
-          <h2 id="component-lab-title">Live component canvas</h2>
-        </div>
-        <span className="nimbus-lab-status">
-          <i /> EDITABLE
-        </span>
-      </div>
-      <div className="nimbus-lab-grid">
-        <div className={`nimbus-canvas is-${background}`} style={previewStyle}>
-          <div className="nimbus-canvas-toolbar">
-            <span>PREVIEW / DEFAULT</span>
-            <div>
-              <i />
-              <i />
-              <i />
-            </div>
-          </div>
-          <div className="nimbus-preview-stage">
-            {component === "action" && (
-              <button
-                className={`nimbus-preview-action is-${variant}`}
-                type="button"
-              >
-                {label}
-                <span aria-hidden="true">↗</span>
-              </button>
-            )}
-            {component === "agent-card" && (
-              <article className={`nimbus-preview-card is-${variant}`}>
-                <div className="nimbus-preview-agent">N</div>
-                <div>
-                  <small>RESEARCH AGENT</small>
-                  <h3>{label}</h3>
-                  <p>Ready · 12 tools connected</p>
-                </div>
-                <span className="nimbus-status-dot" />
-              </article>
-            )}
-            {component === "prompt-field" && (
-              <label className={`nimbus-preview-field is-${variant}`}>
-                <span>Prompt instruction</span>
-                <div>
-                  <input
-                    defaultValue={label}
-                    aria-label="Preview prompt instruction"
-                  />
-                  <button type="button">↑</button>
-                </div>
-                <small>⌘ Enter to run · 2,048 tokens available</small>
-              </label>
-            )}
-          </div>
-          <div className="nimbus-canvas-footer">
-            <span>390 × 220</span>
-            <span>100%</span>
-          </div>
-        </div>
-        <form
-          className="nimbus-lab-controls"
-          onSubmit={(event) => event.preventDefault()}
-        >
-          <div className="nimbus-field-pair">
-            <label>
-              Component
-              <select
-                value={component}
-                onChange={(event) =>
-                  setComponent(event.target.value as EditableComponent)
-                }
-              >
-                <option value="action">Action button</option>
-                <option value="agent-card">Agent card</option>
-                <option value="prompt-field">Prompt field</option>
-              </select>
-            </label>
-            <label>
-              Background
-              <select
-                value={background}
-                onChange={(event) =>
-                  setBackground(event.target.value as CanvasBackground)
-                }
-              >
-                <option value="grid">Graphite</option>
-                <option value="aurora">Cool gray</option>
-                <option value="paper">Studio paper</option>
-                <option value="void">Deep void</option>
-              </select>
-            </label>
-          </div>
-          <label className="nimbus-edit-label">
-            Content
-            <input
-              value={label}
-              maxLength={42}
-              onChange={(event) => setLabel(event.target.value)}
-            />
-          </label>
-          <fieldset>
-            <legend>Variant</legend>
-            <div className="nimbus-segmented">
-              {(["solid", "outline", "ghost"] as const).map((item) => (
-                <button
-                  aria-pressed={variant === item}
-                  key={item}
-                  onClick={() => setVariant(item)}
-                  type="button"
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <label className="nimbus-edit-label nimbus-radius-editor">
-            <span>
-              Component radius <output>{componentRadius}px</output>
-            </span>
-            <input
-              min="2"
-              max="30"
-              type="range"
-              value={componentRadius}
-              onChange={(event) =>
-                setComponentRadius(Number(event.target.value))
-              }
-            />
-          </label>
-          <div className="nimbus-code-line">
-            <code>{code}</code>
-            <button type="button" onClick={() => void copyCode()} aria-label="Copy component code">
-              {copyState === "copied" ? "Copied" : copyState === "error" ? "Retry" : "Copy"}
-            </button>
-            <span className="nimbus-sr-only" aria-live="polite">
-              {copyState === "copied" ? "Component code copied to clipboard" : copyState === "error" ? "Could not copy component code" : ""}
-            </span>
-          </div>
-        </form>
-      </div>
-    </section>
-  );
+  return <section className="nimbus-studio" aria-labelledby="studio-title">
+    <div className="nimbus-inventory">
+      <div className="nimbus-section-title"><div><p>Library</p><h2 id="studio-title">Component inventory</h2></div><span>3</span></div>
+      <label className="nimbus-library-search"><Icon name="search" size={15} /><span className="nimbus-sr-only">Filter components</span><input placeholder="Filter components" /></label>
+      <div className="nimbus-component-group"><p>Agent foundations</p>{componentCatalog.map((item) => <button aria-pressed={component === item.id} className={component === item.id ? "is-selected" : ""} key={item.id} onClick={() => { setComponent(item.id); setCopyState("idle"); }} type="button"><span className="nimbus-item-icon"><Icon name={item.icon} size={16} /></span><span><b>{item.name}</b><small>{item.description}</small></span><Icon name="chevron" size={14} /></button>)}</div>
+      <button className="nimbus-library-more" type="button"><Icon name="plus" size={15} /> Request a component</button>
+    </div>
+
+    <div className="nimbus-workspace">
+      <div className="nimbus-canvas-bar"><div><span className="nimbus-live-dot" />Live preview</div><div><button aria-label="Fit preview to frame" type="button"><Icon name="frame" size={15} /></button><span>100%</span><span>Desktop · 1280</span></div></div>
+      <div className={`nimbus-canvas is-${background}`} style={previewStyle}><div className="nimbus-preview-enter" key={`${component}-${background}-${variant}`}><ComponentPreview component={component} label={label} variant={variant} /></div></div>
+      <div className="nimbus-code-panel"><div className="nimbus-code-head"><div><Icon name="code" size={16} /><div><p>Code output</p><span>React · TypeScript</span></div></div><button className={copyState === "copied" ? "is-copied" : ""} onClick={() => void copyCode()} type="button"><Icon name={copyState === "copied" ? "check" : "copy"} size={15} />{copyState === "copied" ? "Copied" : copyState === "error" ? "Retry copy" : "Copy code"}</button></div><pre><code>{code}</code></pre><span className="nimbus-sr-only" aria-live="polite">{copyState === "copied" ? "Component code copied to clipboard" : copyState === "error" ? "Could not copy component code" : ""}</span></div>
+    </div>
+
+    <form className="nimbus-inspector" onSubmit={(event) => event.preventDefault()}>
+      <div className="nimbus-section-title"><div><p>Properties</p><h2>Component inspector</h2></div><button aria-label="Inspector settings" type="button"><Icon name="settings" size={16} /></button></div>
+      <div className="nimbus-inspector-section"><h3>Content</h3><label className="nimbus-field"><span>Label</span><input maxLength={42} onChange={(event) => setLabel(event.target.value)} value={label} /></label></div>
+      <div className="nimbus-inspector-section"><h3>Appearance</h3><fieldset><legend>Variant</legend><div className="nimbus-segmented">{(["solid", "outline", "quiet"] as const).map((item) => <button aria-pressed={variant === item} key={item} onClick={() => setVariant(item)} type="button">{item}</button>)}</div></fieldset><label className="nimbus-range"><span>Corner radius <output>{componentRadius}px</output></span><input max="20" min="0" onChange={(event) => setComponentRadius(Number(event.target.value))} type="range" value={componentRadius} /></label></div>
+      <div className="nimbus-inspector-section"><h3>Canvas</h3><fieldset><legend>Background</legend><div className="nimbus-background-options">{([{ id: "white", label: "White", color: "#ffffff" }, { id: "soft", label: "Soft gray", color: "#f2f4f7" }, { id: "slate", label: "Slate", color: "#dfe4ea" }, { id: "ink", label: "Ink", color: "#17191d" }] as const).map((item) => <button aria-label={`${item.label} background`} aria-pressed={background === item.id} key={item.id} onClick={() => setBackground(item.id)} title={item.label} type="button"><i style={{ background: item.color }} /><span>{item.label}</span></button>)}</div></fieldset></div>
+      <div className="nimbus-inspector-footer"><div><span>Accessibility</span><b><Icon name="check" size={13} /> AA passed</b></div><div><span>Package</span><code>@nimbus-ui-studio</code></div></div>
+    </form>
+  </section>;
 }
 
-export function NimbusApplicationShell({
-  journeyCount,
-  runtime,
-}: NimbusApplicationShellProps) {
-  const [paletteName, setPaletteName] =
-    useState<keyof typeof palettes>("aurora");
-  const [radius, setRadius] = useState(18);
+const navItems: ReadonlyArray<{ label: string; icon: IconName }> = [
+  { label: "Studio", icon: "frame" }, { label: "Components", icon: "blocks" }, { label: "Patterns", icon: "spark" }, { label: "Design tokens", icon: "tokens" }, { label: "Agent UI", icon: "agent" }, { label: "Accessibility", icon: "check" },
+];
+
+function AgentPattern() {
+  return <section className="nimbus-pattern-card" aria-labelledby="agent-pattern-title"><header><div><span className="nimbus-pattern-icon"><Icon name="message" size={18} /></span><div><p>Application pattern</p><h2 id="agent-pattern-title">Agent conversation</h2></div></div><span className="nimbus-status-badge"><i /> Running</span></header><div className="nimbus-chat"><div className="nimbus-user-message"><p>Prepare a board-ready market brief with cited evidence.</p><time>09:42</time></div><div className="nimbus-agent-message"><div className="nimbus-agent-line"><span><Icon name="agent" size={15} /></span><b>Research orchestrator</b><small>Now</small></div><div className="nimbus-thinking"><div className="nimbus-activity-mark"><i /><i /><i /></div><div><b>Reviewing evidence</b><p>Comparing adoption signals and governance maturity.</p></div></div><ol><li className="is-complete"><i><Icon name="check" size={12} /></i><span>Scope confirmed</span><small>0.4s</small></li><li className="is-complete"><i><Icon name="check" size={12} /></i><span>Sources retrieved</span><small>12 records</small></li><li className="is-active"><i /><span>Synthesizing brief</span><small>In progress</small></li></ol></div></div><footer><button aria-label="Attach a file" type="button"><Icon name="plus" size={16} /></button><span>Ask a follow-up or use / for commands</span><button aria-label="Send message" type="button"><Icon name="send" size={16} /></button></footer></section>;
+}
+
+function RunPattern() {
+  const runs = [{ name: "Market intelligence brief", id: "NR-2841", agent: "Orchestrator", status: "Running", cost: "$1.42" }, { name: "Feedback synthesis", id: "NR-2840", agent: "Analyst", status: "Complete", cost: "$2.17" }, { name: "Access review", id: "NR-2839", agent: "Policy", status: "Approval", cost: "$0.38" }];
+  return <section className="nimbus-pattern-card" aria-labelledby="run-pattern-title"><header><div><span className="nimbus-pattern-icon"><Icon name="activity" size={18} /></span><div><p>Operational pattern</p><h2 id="run-pattern-title">Run activity</h2></div></div><button className="nimbus-text-button" type="button">View all <Icon name="arrow" size={14} /></button></header><div className="nimbus-run-table"><div className="nimbus-table-head"><span>Run</span><span>Agent</span><span>Status</span><span>Cost</span></div>{runs.map((run) => <button className="nimbus-table-row" key={run.id} type="button"><span><b>{run.name}</b><small>{run.id}</small></span><span>{run.agent}</span><span><i className={`is-${run.status.toLowerCase()}`} />{run.status}</span><span>{run.cost}</span></button>)}</div><div className="nimbus-run-summary"><div><span>Success rate</span><strong>98.6%</strong><small>+2.1% this week</small></div><div><span>Median latency</span><strong>1.8s</strong><small>Within target</small></div><div><span>Monthly spend</span><strong>$842</strong><small>42% of budget</small></div></div></section>;
+}
+
+export function NimbusApplicationShell({ journeyCount, runtime }: NimbusApplicationShellProps) {
+  const [paletteName, setPaletteName] = useState<keyof typeof palettes>("blue");
   const [motion, setMotion] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState("Command center");
   const palette = palettes[paletteName];
-  const style: NimbusStyle = {
-    "--nimbus-accent": palette.accent,
-    "--nimbus-secondary": palette.secondary,
-    "--nimbus-accent-rgb": palette.accentRgb,
-    "--nimbus-radius": `${radius}px`,
-  };
-
-  const rootClassName = [
-    "nimbus-root",
-    motion ? "" : "nimbus-motion-off",
-    mobileNavOpen ? "is-mobile-nav-open" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return (
-    <div className={rootClassName} style={style}>
-      <a className="nimbus-skip" href="#nimbus-main">
-        Skip to workspace
-      </a>
-
-      <aside className="nimbus-sidebar" aria-label="Primary navigation">
-        <div className="nimbus-brand">
-          <span className="nimbus-mark" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span>
-            <b>NIMBUS</b>
-            <small>STUDIO LAB</small>
-          </span>
-        </div>
-        <nav id="nimbus-primary-navigation">
-          <p className="nimbus-overline">Workspace</p>
-          {navigation.map((item, index) => (
-            <button
-              className={
-                activeNav === item
-                  ? "nimbus-nav-item is-active"
-                  : "nimbus-nav-item"
-              }
-              key={item}
-              onClick={() => {
-                setActiveNav(item);
-                setMobileNavOpen(false);
-              }}
-              type="button"
-            >
-              <span aria-hidden="true">
-                {["⌁", "◫", "◇", "⌘", "◎", "△"][index]}
-              </span>
-              {item}
-              {item === "Conversations" && <em>8</em>}
-            </button>
-          ))}
-        </nav>
-        <div className="nimbus-sidebar-foot">
-          <span className="nimbus-status-dot" />
-          <div>
-            <b>All systems nominal</b>
-            <small>{journeyCount} journeys monitored</small>
-          </div>
-        </div>
-      </aside>
-
-      <header className="nimbus-topbar">
-        <button
-          aria-controls="nimbus-primary-navigation"
-          aria-expanded={mobileNavOpen}
-          className="nimbus-mobile-menu"
-          onClick={() => setMobileNavOpen((value) => !value)}
-          type="button"
-          aria-label={mobileNavOpen ? "Close navigation" : "Open navigation"}
-        >
-          ⌘
-        </button>
-        <label className="nimbus-search">
-          <span aria-hidden="true">⌕</span>
-          <span className="nimbus-sr-only">Search commands and resources</span>
-          <input placeholder="Search commands, agents, or runs…" />
-          <kbd>⌘ K</kbd>
-        </label>
-        <div className="nimbus-top-actions">
-          <span className="nimbus-runtime">{runtime} reference</span>
-          <button
-            className="nimbus-icon-button"
-            type="button"
-            aria-label="Notifications"
-          >
-            ◌<i />
-          </button>
-          <button
-            className="nimbus-avatar"
-            type="button"
-            aria-label="Open profile menu"
-          >
-            GS
-          </button>
-        </div>
-      </header>
-
-      <main id="nimbus-main" className="nimbus-main">
-        <section className="nimbus-intro" aria-labelledby="page-title">
-          <div>
-            <p className="nimbus-eyebrow">
-              <span /> LIVE WORKSPACE · SEP 05
-            </p>
-            <h1 id="page-title">Good evening, Ganapathy.</h1>
-            <p>
-              Your agent fleet is steady. One research run is waiting for your
-              review.
-            </p>
-          </div>
-          <button className="nimbus-primary" type="button">
-            <span aria-hidden="true">＋</span> New agent run
-          </button>
-        </section>
-
-        <ComponentLab />
-
-        <section className="nimbus-metrics" aria-label="Workspace metrics">
-          <article>
-            <p>
-              Active agents <span>↗ 12%</span>
-            </p>
-            <strong>24</strong>
-            <div className="nimbus-spark">▁▂▃▂▄▅▆▅▇</div>
-          </article>
-          <article>
-            <p>
-              Tasks completed <span>↗ 8.4%</span>
-            </p>
-            <strong>1,284</strong>
-            <div className="nimbus-spark">▂▃▂▄▃▅▆▅▇</div>
-          </article>
-          <article>
-            <p>
-              Success rate <span>↗ 2.1%</span>
-            </p>
-            <strong>
-              98.6<small>%</small>
-            </strong>
-            <div className="nimbus-ring">
-              <i>99</i>
-            </div>
-          </article>
-          <article>
-            <p>
-              Cost this month <span className="neutral">On budget</span>
-            </p>
-            <strong>$842</strong>
-            <div className="nimbus-budget">
-              <i />
-            </div>
-          </article>
-        </section>
-
-        <div className="nimbus-workbench">
-          <section
-            className="nimbus-panel nimbus-conversation"
-            aria-labelledby="conversation-title"
-          >
-            <div className="nimbus-panel-head">
-              <div>
-                <p className="nimbus-overline">Live run · NR-2841</p>
-                <h2 id="conversation-title">Market intelligence brief</h2>
-              </div>
-              <div
-                className="nimbus-agent-stack"
-                aria-label="Three agents collaborating"
-              >
-                <span>OR</span>
-                <span>AN</span>
-                <span>＋1</span>
-              </div>
-            </div>
-
-            <div className="nimbus-transcript">
-              <article className="nimbus-message is-user">
-                <div className="nimbus-message-meta">
-                  <b>You</b>
-                  <time>7:42 PM</time>
-                </div>
-                <p>
-                  Analyze the enterprise agent platform landscape and prepare a
-                  concise board-ready brief with cited evidence.
-                </p>
-              </article>
-              <article className="nimbus-message is-agent">
-                <div className="nimbus-message-meta">
-                  <b>
-                    <span className="nimbus-agent-glyph">N</span> Orchestrator
-                  </b>
-                  <time>7:42 PM</time>
-                </div>
-                <div className="nimbus-thinking" aria-live="polite">
-                  <span className="nimbus-pulse" aria-hidden="true">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <div>
-                    <b>Building the evidence map</b>
-                    <p>
-                      Comparing category signals, adoption patterns, and
-                      governance maturity.
-                    </p>
-                  </div>
-                  <span className="nimbus-thinking-label">
-                    Thinking summary
-                  </span>
-                </div>
-                <ol className="nimbus-run-steps" aria-label="Agent run steps">
-                  {runSteps.map((step) => (
-                    <li
-                      className={step.state === "active" ? "is-active" : ""}
-                      key={step.label}
-                    >
-                      <i aria-hidden="true">
-                        {step.state === "complete" ? "✓" : ""}
-                      </i>
-                      <span>{step.label}</span>
-                      <small>{step.meta}</small>
-                    </li>
-                  ))}
-                </ol>
-              </article>
-            </div>
-
-            <div className="nimbus-composer">
-              <div className="nimbus-attachment">
-                <span>PDF</span>
-                <div>
-                  <b>strategy-notes.pdf</b>
-                  <small>2.4 MB · Ready</small>
-                </div>
-                <button type="button" aria-label="Remove strategy-notes.pdf">
-                  ×
-                </button>
-              </div>
-              <label>
-                <span className="nimbus-sr-only">Message the agent team</span>
-                <textarea
-                  rows={2}
-                  placeholder="Ask Nimbus, use / for commands, @ to mention…"
-                />
-              </label>
-              <div className="nimbus-composer-actions">
-                <div>
-                  <button type="button" aria-label="Attach file">
-                    ⌁
-                  </button>
-                  <button type="button" aria-label="Open commands">
-                    /
-                  </button>
-                  <button type="button" aria-label="Mention agent">
-                    @
-                  </button>
-                </div>
-                <button className="nimbus-send" type="button">
-                  Send <span aria-hidden="true">↑</span>
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <aside
-            className="nimbus-panel nimbus-inspector"
-            aria-labelledby="inspector-title"
-          >
-            <div className="nimbus-panel-head">
-              <div>
-                <p className="nimbus-overline">Interactive</p>
-                <h2 id="inspector-title">Theme lab</h2>
-              </div>
-              <span className="nimbus-beta">LIVE</span>
-            </div>
-            <div className="nimbus-control">
-              <div>
-                <label>Signal palette</label>
-                <output>{palette.label}</output>
-              </div>
-              <div className="nimbus-swatches">
-                {(Object.keys(palettes) as Array<keyof typeof palettes>).map(
-                  (name) => (
-                    <button
-                      aria-label={`Use ${palettes[name].label} palette`}
-                      aria-pressed={paletteName === name}
-                      key={name}
-                      onClick={() => setPaletteName(name)}
-                      style={{ background: palettes[name].accent }}
-                      type="button"
-                    />
-                  ),
-                )}
-              </div>
-            </div>
-            <div className="nimbus-control">
-              <div>
-                <label htmlFor="radius">Shape radius</label>
-                <output>{radius}px</output>
-              </div>
-              <input
-                id="radius"
-                max="28"
-                min="4"
-                onChange={(event) => setRadius(Number(event.target.value))}
-                type="range"
-                value={radius}
-              />
-            </div>
-            <div className="nimbus-control nimbus-toggle-row">
-              <div>
-                <label htmlFor="motion">Interface motion</label>
-                <small>Respecting system preferences</small>
-              </div>
-              <button
-                aria-checked={motion}
-                className="nimbus-toggle"
-                id="motion"
-                onClick={() => setMotion((value) => !value)}
-                role="switch"
-                type="button"
-              >
-                <i />
-              </button>
-            </div>
-            <div className="nimbus-token-preview">
-              <p>Token preview</p>
-              <div>
-                <span>Agent / active</span>
-                <code>var(--nimbus-accent)</code>
-              </div>
-              <div>
-                <span>Shape / panel</span>
-                <code>{radius}px</code>
-              </div>
-              <div>
-                <span>Motion / status</span>
-                <code>{motion ? "expressive" : "reduced"}</code>
-              </div>
-            </div>
-            <button className="nimbus-secondary" type="button">
-              Open full Studio <span>↗</span>
-            </button>
-          </aside>
-        </div>
-
-        <section
-          className="nimbus-panel nimbus-runs"
-          aria-labelledby="runs-title"
-        >
-          <div className="nimbus-panel-head">
-            <div>
-              <p className="nimbus-overline">Operations</p>
-              <h2 id="runs-title">Recent agent runs</h2>
-            </div>
-            <button className="nimbus-link-button" type="button">
-              View all runs →
-            </button>
-          </div>
-          <div className="nimbus-table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Run</th>
-                  <th scope="col">Agent</th>
-                  <th scope="col">State</th>
-                  <th scope="col">Duration</th>
-                  <th scope="col">Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <b>Market intelligence brief</b>
-                    <small>NR-2841 · moments ago</small>
-                  </td>
-                  <td>Orchestrator</td>
-                  <td>
-                    <span className="nimbus-state is-running">Running</span>
-                  </td>
-                  <td>2m 18s</td>
-                  <td>$1.42</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>Customer feedback synthesis</b>
-                    <small>NR-2840 · 12 min ago</small>
-                  </td>
-                  <td>Analyst</td>
-                  <td>
-                    <span className="nimbus-state is-complete">Complete</span>
-                  </td>
-                  <td>4m 03s</td>
-                  <td>$2.17</td>
-                </tr>
-                <tr>
-                  <td>
-                    <b>Production access review</b>
-                    <small>NR-2839 · 26 min ago</small>
-                  </td>
-                  <td>Policy agent</td>
-                  <td>
-                    <span className="nimbus-state is-waiting">Approval</span>
-                  </td>
-                  <td>1m 11s</td>
-                  <td>$0.38</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
+  const style = { "--nimbus-accent": palette.accent, "--nimbus-accent-soft": palette.soft } as CSSProperties;
+  return <div className={`nimbus-root${motion ? "" : " nimbus-motion-off"}${mobileNavOpen ? " is-mobile-nav-open" : ""}`} style={style}>
+    <a className="nimbus-skip" href="#nimbus-main">Skip to component studio</a>
+    <aside className="nimbus-sidebar" aria-label="Primary navigation"><div className="nimbus-brand"><span className="nimbus-mark" aria-hidden="true"><i /><i /><i /><i /></span><span><b>Nimbus</b><small>UI Studio Lab</small></span><button aria-label="Close navigation" className="nimbus-sidebar-close" onClick={() => setMobileNavOpen(false)} type="button"><Icon name="menu" size={17} /></button></div><nav id="nimbus-primary-navigation">{navItems.map((item, index) => <button className={index === 0 ? "is-active" : ""} key={item.label} type="button"><Icon name={item.icon} size={17} /><span>{item.label}</span>{item.label === "Components" && <small>48</small>}</button>)}</nav><div className="nimbus-sidebar-bottom"><button type="button"><Icon name="settings" size={17} /><span>Settings</span></button><div><span className="nimbus-avatar">GS</span><span><b>Ganapathy</b><small>Workspace owner</small></span><Icon name="chevron" size={14} /></div></div></aside>
+    <header className="nimbus-topbar"><div className="nimbus-topbar-left"><button aria-controls="nimbus-primary-navigation" aria-expanded={mobileNavOpen} aria-label="Toggle navigation" className="nimbus-mobile-menu" onClick={() => setMobileNavOpen((open) => !open)} type="button"><Icon name="menu" /></button><div className="nimbus-breadcrumb"><span>Design system</span><Icon name="chevron" size={13} /><b>Studio</b></div></div><label className="nimbus-global-search"><Icon name="search" size={16} /><span className="nimbus-sr-only">Search Nimbus</span><input placeholder="Search components, tokens, and patterns" /><kbd>Ctrl K</kbd></label><div className="nimbus-top-actions"><span className="nimbus-runtime">{runtime}</span><button aria-label="Notifications" type="button"><Icon name="bell" size={17} /><i /></button><button aria-label="Open account menu" className="nimbus-top-avatar" type="button">GS</button></div></header>
+    <main className="nimbus-main" id="nimbus-main"><section className="nimbus-page-head"><div><div className="nimbus-title-row"><h1>Component Studio</h1><span>Stable preview</span></div><p>Edit production-ready React components, validate their states, and copy the code.</p></div><div className="nimbus-page-actions"><div className="nimbus-palette-control" aria-label="Accent color">{(Object.keys(palettes) as Array<keyof typeof palettes>).map((name) => <button aria-label={`Use ${palettes[name].label} accent`} aria-pressed={paletteName === name} key={name} onClick={() => setPaletteName(name)} style={{ background: palettes[name].accent }} type="button" />)}</div><button aria-checked={motion} className="nimbus-motion-toggle" onClick={() => setMotion((value) => !value)} role="switch" type="button"><i /><span>Motion</span></button></div></section><ComponentLab accent={palette.accent} /><section className="nimbus-patterns-head"><div><p>Enterprise patterns</p><h2>Agentic application components</h2></div><span>{journeyCount} verified journeys</span></section><div className="nimbus-pattern-grid"><AgentPattern /><RunPattern /></div><footer className="nimbus-footer"><span>Nimbus UI Studio Lab · Apache-2.0</span><span>Keyboard accessible · WCAG 2.2 AA target</span></footer></main>
+  </div>;
 }

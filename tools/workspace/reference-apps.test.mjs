@@ -57,16 +57,22 @@ test("both applications are configured for static Sites artifacts", () => {
 
 test("the shared Studio lets users edit components and canvas backgrounds", () => {
   const shell = read("packages/application-shell/src/nimbus-application-shell.tsx");
+  const styles = read("packages/application-shell/src/styles.css");
 
-  assert.match(shell, /Live component canvas/);
+  assert.match(shell, /Component Studio/);
+  assert.match(shell, /Component inventory/);
+  assert.match(shell, /Component inspector/);
+  assert.match(shell, /Code output/);
   assert.match(shell, /setComponent/);
   assert.match(shell, /setBackground/);
   assert.match(shell, /setLabel/);
   assert.match(shell, /setComponentRadius/);
-  assert.match(shell, /Graphite/);
-  assert.match(shell, /Cool gray/);
-  assert.match(shell, /Studio paper/);
-  assert.match(shell, /Deep void/);
+  assert.match(shell, /White/);
+  assert.match(shell, /Soft gray/);
+  assert.match(shell, /Slate/);
+  assert.match(shell, /Ink/);
   assert.match(shell, /navigator\.clipboard\.writeText/);
   assert.match(shell, /Component code copied to clipboard/);
+  assert.match(styles, /prefers-reduced-motion/);
+  assert.doesNotMatch(styles, /gradient|text-shadow|filter:\s*blur/i);
 });
