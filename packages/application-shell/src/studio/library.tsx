@@ -13,6 +13,7 @@ export function Library({
   onPreset,
   onAction,
   onTemplate,
+  onOpenTokens,
 }: {
   widgets: Widget[];
   selectedId: string | null;
@@ -21,6 +22,7 @@ export function Library({
   onPreset: (preset: DesignPreset) => void;
   onAction: (id: string, action: "hide" | "lock" | "up" | "down") => void;
   onTemplate: (name: "dashboard" | "blank" | "agent" | "settings") => void;
+  onOpenTokens: () => void;
 }) {
   const [tab, setTab] = useState("components");
   const tabId = useId();
@@ -146,6 +148,8 @@ export function Library({
             <div className="studio-section-title">
               DESIGN PRESETS <span>{designPresets.length}</span>
             </div>
+          <button className="studio-secondary" onClick={onOpenTokens}>Open Token Studio ↗</button>
+            <p className="studio-help">Inspect all 75 styles in light and dark. Copy their CSS variables or download typed tokens.</p>
             <p className="studio-help">
               {selected
                 ? `Apply to ${selected.name}. Your other widgets keep their styles.`
@@ -191,8 +195,8 @@ export function Library({
                 ))}
             </div>
             <p className="studio-help">
-              Independent interpretations of design analyses. No brand
-              affiliation. Attribution is included with exports.
+              Original descriptive archetypes, not official brand themes.
+              Existing project styles stay unchanged until you apply a preset.
             </p>
           </>
         )}

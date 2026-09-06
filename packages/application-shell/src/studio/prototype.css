@@ -237,7 +237,7 @@
   font-size: 11px;
   padding: 6px 8px;
 }
-@media (max-width: 800px) {
+@container nimbus-studio (max-width: 800px) {
   .studio-prototype-toolbar {
     flex-wrap: wrap;
     padding: 8px;

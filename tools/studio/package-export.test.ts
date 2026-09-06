@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { runInNewContext } from "node:vm";
 import { crc32 as referenceCrc32 } from "node:zlib";
+import { canonicalSourceText } from './source-text.ts';
 import { createDocument, createWidget } from "../../packages/application-shell/src/studio/model.ts";
 import { widgetCatalog } from "../../packages/application-shell/src/studio/catalog.ts";
 import { parseProject } from "../../packages/application-shell/src/studio/project.ts";
@@ -17,9 +18,9 @@ const studio = join(root, "packages/application-shell/src/studio");
 const sourceFiles = ["render.ts", "types.ts", "model.ts", "export.ts"];
 function snapshot() {
   return Object.fromEntries([
-    ...sourceFiles.map((name) => [name, readFileSync(join(studio, name), "utf8")]),
-    ["LICENSE", readFileSync(join(root, "LICENSE"), "utf8")],
-    ["THIRD_PARTY_NOTICES.md", readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8")],
+    ...sourceFiles.map((name) => [name, canonicalSourceText(readFileSync(join(studio, name), "utf8"))]),
+    ["LICENSE", canonicalSourceText(readFileSync(join(root, "LICENSE"), "utf8"))],
+    ["THIRD_PARTY_NOTICES.md", canonicalSourceText(readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8"))],
   ]);
 }
 
@@ -318,9 +319,9 @@ if (process.argv.includes("--sync-runtime")) {
     sidebar.actions = { "item:0": "second" };
     const result = pkg.createReactPackage(input);
     const files = unzip(zip.createZip(result.entries));
-    assert.ok(files.get("packages/runtime/src/render.ts")!.toString() === readFileSync(join(studio, "render.ts"), "utf8"), "ZIP renderer must match current source; run source sync");
-    assert.equal(files.get("packages/runtime/LICENSE")!.toString(), readFileSync(join(root, "LICENSE"), "utf8"));
-    assert.equal(files.get("THIRD_PARTY_NOTICES.md")!.toString(), readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8"));
+    assert.ok(files.get("packages/runtime/src/render.ts")!.toString() === canonicalSourceText(readFileSync(join(studio, "render.ts"), "utf8")), "ZIP renderer must match current source; run source sync");
+    assert.equal(files.get("packages/runtime/LICENSE")!.toString(), canonicalSourceText(readFileSync(join(root, "LICENSE"), "utf8")));
+    assert.equal(files.get("THIRD_PARTY_NOTICES.md")!.toString(), canonicalSourceText(readFileSync(join(root, "THIRD_PARTY_NOTICES.md"), "utf8")));
     const dir = mkdtempSync(join(tmpdir(), "nimbus-export-consumer-"));
     for (const [name, data] of files) {
       mkdirSync(dirname(join(dir, name)), { recursive: true });

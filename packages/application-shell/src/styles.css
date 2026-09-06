@@ -2,3 +2,5 @@
 @import "./studio/prototype.css";
 @import "./studio/template-gallery.css";
 @import "./studio/visual-properties.css";
+@import './studio/token-studio.css';
+@import './studio/viewport.css';

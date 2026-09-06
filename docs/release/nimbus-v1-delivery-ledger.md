@@ -6,8 +6,8 @@ Authority: [GOAL.md](../../GOAL.md), copied verbatim from the user's 2026-09-06 
 
 | Milestone | Current evidence | Missing exit evidence / next work |
 | --- | --- | --- |
-| M0 local foundation | Real SQLite schema, migrations, 75 current preset seeds, revisioned HTTP CRUD, setup/dev commands; 39 local tests plus 62 studio tests; source-snapshot durability and actual Git-clone install/start pass. Independent review PASS. Issue #138, PR #139, branch feat/m0-local-foundation. | Hosted Windows/Ubuntu and CodeQL reruns, then merge. UI persistence remains M3. |
-| M1 75 token archetypes | Existing 75 legacy style presets retained and stored. | Required descriptive names/original complete tokens, both themes, swatch sheets and contrast audit. Existing brand-inspired names do not meet the new spec. |
+| M0 local foundation | Merged PR #139, closed #138; squash `9ce898e`. Hosted Windows/Ubuntu run `34062450196`, CodeQL and governance passed. Actual clone startup and SQLite durability verified at final PR head `55004df`. | Exit passed. UI persistence remains M3. |
+| M1 75 token archetypes | Branch feat/m1-token-presets, issue #140. Original descriptive catalog, 150 theme sets, strict compiler/export, Token Studio, transactional v2 seed migration. 13 token tests and 22 DB/adapter/source checks pass; 6,900 contrast pairs pass. | Browser matrix, independent review, final hosted checks and merge remain in progress. Full token-native widget rendering belongs to M2. |
 | M2 native widgets and fidelity | Shared HTML renderer and compile/export tests exist. | Real `nimbus-ui` React Button/Card/Stat, canvas/export screenshot comparison >0.99 SSIM or <1% differing pixels across 75 presets and both themes. String/roundtrip tests are not fidelity proof. |
 | M3 canvas/persistence | Working flat canvas gestures, selection, browser IndexedDB persistence. SQLite API now available. | Hierarchical node editing and SQLite client wiring/migration with every editable field restored after restart. |
 | M4 complete inspector | Position, dimensions, style, content, linear/radial/image backgrounds, per-role typography controls. | Inline text editing, complete spacing/element overrides, conic/multi-stop controls and verified persistence coverage. |
@@ -23,7 +23,7 @@ Authority: [GOAL.md](../../GOAL.md), copied verbatim from the user's 2026-09-06 
 
 - Keep all 75 styles and 17 designed page templates while adding the 12 complete project starters; these are different catalogs.
 - Preserve existing user projects and uncommitted editor work. No destructive reset or replacement of the saved checkout.
-- Both a fresh source-snapshot durability check and an actual separate Git-clone install/start check were run. The latter used commit `96ed9d5`; hosted checks must validate the final PR revision before merge.
+- M0 passed both fresh source-snapshot durability and a separate actual Git-clone install/start check, repeated at final PR head `55004df` before merge. M1 runs these relevant installation/migration checks again.
 - Protocol adapters, accounts, cloud collaboration, telemetry, hosting, SSR/PWA and additional locales are explicitly outside this design/export release. Existing issues for those features are not marked complete by this work.
 - No registry package publication is assumed. M9 must provide an honest runnable local-package path and avoid an `npm install nimbus-ui` instruction that resolves unrelated code.
 - Current Apache licensing/third-party MIT notices are preserved pending the explicit MIT transition audit; a package field change alone is not relicensing evidence.
@@ -37,4 +37,4 @@ Authority: [GOAL.md](../../GOAL.md), copied verbatim from the user's 2026-09-06 
 - The existing prototype browser script assumed a previously configured 1600×1000 viewport. It now establishes that viewport explicitly; the full journey passes under the combined launcher with zero browser errors/warnings.
 - Node 22.16 emits experimental notices for its SQLite and type-stripping APIs. These are visible terminal notices, not a falsely claimed warning-free Node runtime.
 
-No milestone is closed and no whole-product completion claim is made by this ledger.
+M0 is closed. M1 remains in progress; no whole-product completion claim is made by this ledger.

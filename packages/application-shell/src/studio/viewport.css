@@ -1,0 +1,58 @@
+/* Editor-only layout. Never scale or rewrite the user's design document. */
+.studio-app {
+  position: fixed;
+  left: var(--studio-viewport-left, 0px);
+  top: var(--studio-viewport-top, 0px);
+  width: var(--studio-viewport-width, 100%);
+  max-width: 100%;
+  height: var(--studio-viewport-height, 100dvh);
+  min-width: 0;
+  min-height: 0;
+  container: nimbus-studio / size;
+}
+.studio-topbar, .studio-workbench, .studio-library, .studio-inspector,
+.studio-canvas-host, .studio-stage-scroll { min-width: 0; min-height: 0; }
+.studio-topbar { flex-wrap: wrap; height: auto; min-height: 68px; padding-block: 10px; }
+.studio-pagebar { flex-wrap: wrap; }
+.studio-pagebar label { flex: 1 1 180px; }
+.studio-pagebar select { width: 100%; }
+.studio-canvas-toolbar { flex-wrap: wrap; height: auto; min-height: 47px; gap: 4px 8px; padding-block: 5px; }
+.studio-canvas-label { gap: 8px; }
+.studio-canvas-label > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.studio-canvas-label > span:last-child { white-space: nowrap; }
+.studio-app dialog:not(.studio-prototype) {
+  position: fixed;
+  inset: auto;
+  left: calc(var(--studio-viewport-left, 0px) + var(--studio-viewport-width, 100vw) / 2);
+  top: calc(var(--studio-viewport-top, 0px) + var(--studio-viewport-height, 100dvh) / 2);
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: calc(var(--studio-viewport-width, 100vw) - 24px);
+  max-height: calc(var(--studio-viewport-height, 100dvh) - 24px);
+}
+.studio-app .studio-prototype {
+  inset: auto;
+  left: var(--studio-viewport-left, 0px);
+  top: var(--studio-viewport-top, 0px);
+  width: var(--studio-viewport-width, 100vw);
+  height: var(--studio-viewport-height, 100dvh);
+}
+.studio-export-dialog[open] { display: flex; flex-direction: column; overflow: auto; }
+.studio-export-dialog textarea { flex: 1 1 160px; min-height: 80px; }
+.studio-export-dialog .studio-dialog-head,
+.studio-export-dialog .studio-dialog-footer { flex-shrink: 0; }
+.studio-export-dialog .studio-dialog-footer { position: sticky; bottom: 0; background: #fff; z-index: 1; }
+@container nimbus-studio (max-width: 900px) {
+  .studio-pagebar { gap: 6px; padding: 8px 10px; }
+  .studio-stage-scroll { padding-inline: 20px; }
+  .studio-canvas-label { padding: 14px 20px 8px; }
+}
+@container nimbus-studio (max-height: 600px) {
+  .studio-subbar { display: none; }
+  .studio-topbar { min-height: 54px; padding-block: 6px; }
+  .studio-mobile-tabs { height: 36px; }
+  .studio-canvas-label { padding-block: 8px; }
+}
+@container nimbus-studio (max-height: 450px) {
+  .studio-canvas-label { display: none; }
+}

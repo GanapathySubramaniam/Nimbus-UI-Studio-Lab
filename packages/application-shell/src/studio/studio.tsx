@@ -5,7 +5,9 @@ import { Library } from "./library";
 import { Inspector } from "./inspector";
 import { download } from "./download";
 import { Icon } from "./icons";
+import { useStudioViewport } from './viewport';
 import { widgetCatalog } from "./catalog";
+import { applyPresetStyle, themedPreset } from './presets';
 import {
   createWidget,
   constrainWidget,
@@ -36,6 +38,7 @@ import type { StudioDocument, Widget, WidgetKind, DesignPreset } from "./types";
 
 const ExportDialog = lazy(() => import("./export-dialog").then(module => ({default:module.ExportDialog})));
 const TemplateGallery = lazy(() => import("./template-gallery").then(module => ({default:module.TemplateGallery})));
+const TokenStudio = lazy(() => import('./token-studio').then(module => ({ default: module.TokenStudio })));
 
 export function VisualStudio() {
   const [history, setHistory] = useState(() =>
@@ -54,6 +57,7 @@ export function VisualStudio() {
   const [pagesOpen, setPagesOpen] = useState(false),
     [templatesOpen, setTemplatesOpen] = useState(false);
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
+  const [tokensOpen, setTokensOpen] = useState(false);
   const documentRef = useRef(doc);
   documentRef.current = doc;
   const [pageEpoch, setPageEpoch] = useState(0);
@@ -75,6 +79,7 @@ export function VisualStudio() {
   const [notice, setNotice] = useState(""),
     [saveState, setSaveState] = useState("Loading project…");
   const [ready, setReady] = useState(false);
+  const viewportRef = useStudioViewport(ready);
   const [restoreFailed, setRestoreFailed] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null),
     lastSaved = useRef("");
@@ -226,7 +231,7 @@ export function VisualStudio() {
     const offset = (doc.widgets.length % 8) * 24;
     const w = createWidget(
       def,
-      undefined,
+      themedPreset('muted-enterprise', 'light'),
       x ?? 240 + offset,
       y ?? 200 + offset,
     );
@@ -276,6 +281,7 @@ export function VisualStudio() {
         exportOpen ||
         pagesOpen ||
         templatesOpen ||
+        tokensOpen ||
         fullscreenPreview ||
         !ready ||
         typing
@@ -319,15 +325,13 @@ export function VisualStudio() {
     exportOpen,
     pagesOpen,
     templatesOpen,
+    tokensOpen,
     fullscreenPreview,
     ready,
   ]);
   function applyPreset(preset: DesignPreset) {
-    if (selected) {
-      changeWidget(selected.id, {
-        presetId: preset.id,
-        style: { ...preset.style },
-      });
+    if (selected && !selected.locked) {
+      changeWidget(selected.id, applyPresetStyle(selected, preset));
       setNotice(`${preset.name} applied to ${selected.name}.`);
     }
   }
@@ -388,7 +392,7 @@ export function VisualStudio() {
       </div>
     );
   return (
-    <div className={`studio-app mobile-${mobilePanel}`}>
+    <div ref={viewportRef} className={`studio-app mobile-${mobilePanel}`}>
       <h1 className="studio-sr-only">Nimbus visual page studio</h1>
       <a className="studio-skip" href="#studio-workspace">
         Skip to canvas workspace
@@ -556,6 +560,7 @@ export function VisualStudio() {
           onPreset={applyPreset}
           onAction={layerAction}
           onTemplate={template}
+          onOpenTokens={() => setTokensOpen(true)}
         />
         <main className="studio-center" aria-label="Page editor">
           <div className="studio-pagebar">
@@ -805,6 +810,11 @@ export function VisualStudio() {
           selected={selected}
           onClose={() => setExportOpen(false)}
         />
+        </Suspense>
+      )}
+      {tokensOpen && (
+        <Suspense fallback={<div className="studio-loading-overlay" role="status">Opening Token Studio…</div>}>
+          <TokenStudio selected={selected} onApply={applyPreset} onClose={() => setTokensOpen(false)} />
         </Suspense>
       )}
       {helpOpen && (
