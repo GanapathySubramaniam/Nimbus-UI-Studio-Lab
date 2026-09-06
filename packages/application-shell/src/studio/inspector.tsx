@@ -224,6 +224,7 @@ export function Inspector({
                           if (p) onPreset(p);
                         }}
                       >
+                        {!preset && <option value={widget.presetId}>Saved custom / legacy style</option>}
                         {designPresets.map((p) => (
                           <option key={p.id} value={p.id}>
                             {p.name}

@@ -1,0 +1,40 @@
+// Playwright CLI; runs only against a disposable QA browser profile.
+async (page) => {
+  const assert = (condition, message) => { if (!condition) throw new Error(message); };
+  const button = name => page.getByRole('button', { name, exact: true });
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  if (await button('Close Token Studio').count()) await button('Close Token Studio').click();
+  if (await page.getByRole('dialog').count()) await page.keyboard.press('Escape');
+  await page.getByRole('tab', { name: 'Components', exact: true }).click();
+  await button('Add Statistic').click();
+  const nodes = page.locator('.studio-canvas-widget');
+  const count = await nodes.count();
+  const target = nodes.last();
+  const original = await target.locator('.nw-node').evaluate(node => getComputedStyle(node).backgroundColor);
+  await page.getByRole('tab', { name: 'Content', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Title', exact: true }).fill('Verified theme application');
+  await page.getByRole('tab', { name: 'Styles', exact: true }).click();
+  await button('Open Token Studio ↗').click();
+  const dialog = page.getByRole('dialog', { name: 'Token Studio' });
+  await dialog.locator('[data-preset-option="editorial-warm"]').click();
+  await dialog.getByRole('radio', { name: 'Dark', exact: true }).check();
+  const expected = await dialog.locator('.token-sample-card').first().evaluate(node => getComputedStyle(node).backgroundColor);
+  await button('Apply Dark Style').click();
+  await button('Close Token Studio').click();
+  assert(await target.locator('.nw-node').evaluate(node => getComputedStyle(node).backgroundColor) === expected, 'Applied style differs from token surface');
+  assert((await target.innerText()).includes('Verified theme application'), 'Style application lost edited text');
+  await button('Undo').click();
+  assert(await target.locator('.nw-node').evaluate(node => getComputedStyle(node).backgroundColor) === original, 'Undo did not restore base');
+  await button('Redo').click();
+  assert(await target.locator('.nw-node').evaluate(node => getComputedStyle(node).backgroundColor) === expected, 'Redo did not restore dark theme');
+  await page.waitForFunction(() => document.querySelector('.studio-save-state')?.textContent === 'Saved locally');
+  await page.reload();
+  await page.waitForFunction(expectedCount => document.querySelectorAll('.studio-canvas-widget').length === expectedCount, count);
+  assert(await nodes.last().locator('.nw-node').evaluate(node => getComputedStyle(node).backgroundColor) === expected, 'Reload lost theme snapshot');
+  assert((await nodes.last().innerText()).includes('Verified theme application'), 'Reload lost content');
+  await button('17 templates').click();
+  await page.locator('.studio-template-card').first().waitFor();
+  assert(await page.locator('.studio-template-card').count() === 17, 'All 17 page templates must remain available');
+  await page.keyboard.press('Escape');
+  return { result: 'PASS', checks: ['apply dark style', 'edited text retained', 'single-step undo/redo', 'persist and reload', '17 page templates retained'] };
+}

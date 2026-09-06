@@ -213,12 +213,12 @@
 .studio-template-empty p {
   color: var(--gallery-muted);
 }
-@media (max-width: 900px) {
+@container nimbus-studio (max-width: 900px) {
   .studio-template-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 560px) {
+@container nimbus-studio (max-width: 560px) {
   .studio-template-gallery {
     width: calc(100vw - 16px);
     max-height: calc(100dvh - 16px);

@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import { designPresets } from "../../packages/application-shell/src/studio/presets.ts";
+import { tokenPresets } from "../../packages/application-shell/src/studio/token-catalog.ts";
 
 const schemaV1 = `
   CREATE TABLE project (
@@ -123,7 +124,7 @@ const schemaV1 = `
   ) STRICT;
 `;
 
-/** Versioned DDL and seed are committed together; never rewrite installed seeds. */
+/** Each version is atomic. Only an explicit migration replaces built-in seeds. */
 export function migrate(db: DatabaseSync): void {
   db.exec("BEGIN IMMEDIATE");
   try {
@@ -132,14 +133,27 @@ export function migrate(db: DatabaseSync): void {
       applied_at TEXT NOT NULL
     ) STRICT`);
     const versions = db.prepare("SELECT version FROM migration ORDER BY version").all();
-    if (versions.some((row) => row["version"] !== 1)) {
+    if (versions.length > 2 || versions.some((row, index) => row["version"] !== index + 1)) {
       throw new Error("Unsupported SQLite schema version.");
     }
     if (versions.length === 0) {
       db.exec(schemaV1);
-      const insert = db.prepare("INSERT INTO preset (id, name, preset_json) VALUES (?, ?, ?)");
-      for (const preset of designPresets) insert.run(preset.id, preset.name, JSON.stringify(preset));
       db.prepare("INSERT INTO migration (version, applied_at) VALUES (?, ?)").run(1, new Date().toISOString());
+    }
+    if (versions.length < 2) {
+      // The preset table contains built-ins only. User libraries and project
+      // snapshots deliberately have no foreign key to these replaceable IDs.
+      db.exec("DELETE FROM preset");
+      const insert = db.prepare("INSERT INTO preset (id, name, preset_json) VALUES (?, ?, ?)");
+      for (const preset of designPresets) {
+        const tokens = tokenPresets.find(candidate => candidate.id === preset.id);
+        if (!tokens) throw new Error(`Missing token seed: ${preset.id}`);
+        insert.run(preset.id, preset.name, JSON.stringify({
+          ...preset, tokenVersion: 1, themes: tokens.themes,
+          density: tokens.density, preferredTheme: tokens.preferredTheme,
+        }));
+      }
+      db.prepare("INSERT INTO migration (version, applied_at) VALUES (?, ?)").run(2, new Date().toISOString());
     }
     db.exec("COMMIT");
   } catch (error) {

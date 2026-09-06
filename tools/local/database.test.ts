@@ -63,11 +63,15 @@ test("creates every required table, configures SQLite, and seeds only the curren
   assert.equal(store.db.prepare("PRAGMA foreign_keys").get()!["foreign_keys"], 1);
   assert.equal(store.db.prepare("PRAGMA journal_mode").get()!["journal_mode"], "wal");
   assert.equal(store.db.prepare("PRAGMA busy_timeout").get()!["timeout"], 5000);
-  assert.equal(count(db, "migration"), 1);
+  assert.equal(count(db, "migration"), 2);
   assert.equal(count(db, "preset"), 75);
   for (const preset of designPresets) {
     const row = db.prepare("SELECT preset_json FROM preset WHERE id = ?").get(preset.id)!;
-    assert.deepEqual(JSON.parse(String(row["preset_json"])), preset);
+    const seeded = JSON.parse(String(row["preset_json"]));
+    assert.deepEqual(seeded.style, preset.style);
+    assert.equal(seeded.name, preset.name);
+    assert.equal(seeded.tokenVersion, 1);
+    assert.deepEqual(Object.keys(seeded.themes).sort(), ['dark', 'light']);
   }
   for (const table of ["animation_preset", "template", "user_preset", "user_widget_style", "logo"]) assert.equal(count(db, table), 0);
   assert.deepEqual(store.listProjects(), []);
@@ -113,7 +117,7 @@ test("migration repeats and close/reopen preserve data, revision, timestamps and
   const second = f.open();
   assert.deepEqual(second.getProject("persist"), row);
   assert.equal(count(second.db, "preset"), 75);
-  assert.equal(count(second.db, "migration"), 1);
+  assert.equal(count(second.db, "migration"), 2);
   integrity(second.db);
 });
 
@@ -267,14 +271,14 @@ test("failed migration rolls back DDL and version records and can be retried", (
   db.exec("DROP TABLE node");
   migrate(db);
   assert.equal(count(db, "preset"), 75);
-  assert.equal(count(db, "migration"), 1);
+  assert.equal(count(db, "migration"), 2);
   integrity(db);
 });
 
 test("refuses future schema on migration and open without changing existing data", (t) => {
   const f = setup(t), store = f.open();
   const original = store.saveProject("future", fixture(), 0);
-  store.db.prepare("INSERT INTO migration (version, applied_at) VALUES (?, ?)").run(2, "2099-01-01T00:00:00.000Z");
+  store.db.prepare("INSERT INTO migration (version, applied_at) VALUES (?, ?)").run(99, "2099-01-01T00:00:00.000Z");
   const before = tables.map((table) => store.db.prepare(`SELECT * FROM ${table}`).all());
   assert.throws(() => migrate(store.db), /Unsupported SQLite schema version/);
   assert.throws(() => f.open(), /Unsupported SQLite schema version/);
@@ -300,7 +304,7 @@ test("failed preset seed rolls back the whole migration and leaves a retryable e
   assert.deepEqual(db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table'").all(), []);
   migrate(db);
   assert.equal(count(db, "preset"), 75);
-  assert.equal(count(db, "migration"), 1);
+  assert.equal(count(db, "migration"), 2);
   integrity(db);
 });
 

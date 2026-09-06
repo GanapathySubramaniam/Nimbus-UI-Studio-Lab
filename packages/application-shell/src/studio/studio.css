@@ -1379,7 +1379,7 @@ svg {
 .studio-mobile-tabs {
   display: none;
 }
-@media (min-width: 1700px) {
+@container nimbus-studio (min-width: 1700px) {
   .studio-workbench {
     grid-template-columns: 268px minmax(0, 1fr) 292px;
   }
@@ -1387,7 +1387,7 @@ svg {
     max-width: 88px;
   }
 }
-@media (max-width: 1150px) {
+@container nimbus-studio (max-width: 1150px) {
   .studio-workbench {
     grid-template-columns: 218px minmax(0, 1fr) 248px;
   }
@@ -1430,7 +1430,7 @@ svg {
     font-size: 8px;
   }
 }
-@media (max-width: 900px) {
+@container nimbus-studio (max-width: 900px) {
   .studio-workbench {
     display: flex;
     flex: 1;
@@ -1515,7 +1515,7 @@ svg {
     min-height: 36px;
   }
 }
-@media (max-width: 600px) {
+@container nimbus-studio (max-width: 600px) {
   .studio-topbar {
     display: grid;
     grid-template-columns: minmax(105px, 0.75fr) minmax(0, 1.25fr);

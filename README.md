@@ -17,12 +17,12 @@ Open http://127.0.0.1:5173. Setup uses the pinned pnpm 12.3.4 through npm and in
 
 [GOAL.md](GOAL.md) is the current design/export product specification. Nimbus aims to turn a designer's choices into a deterministic, reviewable component composition that an AI coding agent can extend without inventing another design system. Shorter composition files should reduce repeated markup in model context; **token savings have not yet been measured**, and no numeric cost claim is currently verified.
 
-The existing prototype below is the starting point, not completion of that specification. The local SQLite foundation is M0. The named original token archetypes, full widget fidelity matrix, motion runtime, media/library tooling, native `nimbus-ui` exports, project dashboard, and complete project templates have separate exit gates. The older agent-protocol roadmap is outside this release.
+The existing prototype below is the starting point, not completion of that specification. The local SQLite foundation (M0) is merged. The current M1 branch adds the original token catalog and Token Studio; full widget fidelity, motion runtime, media/library tooling, native `nimbus-ui` exports, project dashboard, and complete project templates have separate exit gates. The older agent-protocol roadmap is outside this release.
 
 ## What works
 
 - 40 widget kinds across navigation, content, data, forms, feedback, commerce and agentic UI.
-- 75 independently applicable design presets: Nimbus plus interpretations of all 74 source designs.
+- 75 original descriptive visual styles, each with light/dark semantic color, type, spacing, shape, elevation and motion tokens. Styles → Open Token Studio exposes swatches, measured contrast, CSS and typed token JSON downloads.
 - Click or drag to insert, pointer movement and resizing, grid snapping, keyboard nudging, editable dimensions.
 - Per-widget fill, accent, text, border, radius, padding, opacity, typography and elevation.
 - Content, table/chart data, image and sidebar-logo uploads; uploaded raster images travel inside exports.
@@ -31,6 +31,7 @@ The existing prototype below is the starting point, not completion of that speci
 - 17 designed page templates plus blank pages, with all 75 visual styles retained.
 - Multi-page projects, per-widget and navigation-item page links, project-wide undo/redo.
 - Full-window interactive prototype preview, optional native fullscreen, desktop/tablet/mobile views.
+- Adaptive editor panels and dialogs follow the visible browser area, including visual zoom; narrow screens expose Components / Canvas / Properties navigation instead of clipping the inspector.
 - Solid/gradient/image backgrounds, per-text-role typography, logo sizing and loading animation controls.
 - Browser-local IndexedDB autosave, legacy migration, validated JSON import and downloadable editable projects.
 - Export app/page/widget React ZIPs with local Nimbus runtime source and uploaded assets; copy component code or standalone HTML.
@@ -44,7 +45,8 @@ The existing Vite and Next.js reference applications consume one shared applicat
 | Module | Responsibility |
 | --- | --- |
 | types, model, history | Versioned project contract, validation, editing helpers and undo/redo |
-| catalog, presets | Widget definitions and attributed design values |
+| catalog, presets | Widget definitions and explicit legacy-renderer style adapter |
+| tokens, token-catalog, token-studio | Validated pure token contracts, 75 original light/dark archetypes, scoped swatch sheets and token export |
 | render, export | Shared escaped markup/CSS and portable code generation |
 | studio, canvas | Editor orchestration, persistence, pointer and keyboard gestures |
 | library, inspector, panel-tabs | Insertion, presets, layers and accessible property navigation |
@@ -70,9 +72,11 @@ This is a usable visual-editor foundation, with unstable public APIs. Business-a
 
 The editor still saves projects in one browser on one device while the new SQLite repository and HTTP service are being integrated in M3. Database availability is not a claim that canvas autosave already uses SQLite. Download JSON backups. Enterprise deployment and WCAG conformance require separate integration and assistive-technology review.
 
+Token Studio measures supported solid-color pairs, not arbitrary user overrides, image/gradient backgrounds or all component states. Applying a style to the current renderer transfers its supported base fields and preserves uploaded images, logos and per-role text overrides. Existing saved styles remain unchanged until explicitly restyled. Full token-native component rendering and pixel-diff evidence begin in M2. See [preset authoring](docs/preset-authoring.md).
+
 ## Design references and license
 
-The reference checkout is kept outside Nimbus at `../nimbus-design-reference` relative to the parent nimbusUI directory. Runtime presets contain derived numeric/color/type values, source links and original descriptions, not copied DESIGN.md files or brand logos. These are independent interpretations, not official company design systems.
+The reference checkout is kept outside Nimbus at `../nimbus-design-reference` relative to the parent nimbusUI directory. The selectable catalog uses original descriptive archetypes, not company names, logos, proprietary fonts or copied DESIGN.md files. Consulted sources are recorded in [inspiration notes](docs/INSPIRATION.md). Old saved projects retain their explicit visual snapshots; changing catalog labels never silently rewrites a user's design.
 
 Nimbus code is licensed under [Apache 2.0](LICENSE). Adapted reference data retains the complete MIT notice in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and generated code.
 
