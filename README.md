@@ -6,9 +6,9 @@ Nimbus is a local-first visual prototype builder for dashboard and agentic-produ
 
 ## Watch the product-launch demo
 
-[![Watch the Nimbus UI Studio product-launch demo](docs/media/nimbus-studio-launch-demo.jpg)](docs/media/nimbus-studio-launch-demo.mp4)
+[![Watch the Nimbus UI Studio product-launch demo on YouTube](docs/media/nimbus-studio-launch-demo.jpg)](https://youtu.be/eN99KBtA9Pg)
 
-[Watch or download the launch MP4](docs/media/nimbus-studio-launch-demo.mp4) — a 68-second, Remotion-rendered product launch film in H.264 at 1600 × 900. It pairs original editorial motion and messaging with an authentic Studio walkthrough: editing widget text and values, browsing the 75-style Token Studio in light and dark, applying a style, exploring the 17 page templates, switching between desktop and mobile preview, and downloading a React ZIP. Silent video.
+[Watch the product-launch demo on YouTube](https://youtu.be/eN99KBtA9Pg) — a 68-second, Remotion-rendered product launch film in H.264 at 1600 × 900. It pairs original editorial motion and messaging with an authentic Studio walkthrough: editing widget text and values, browsing the 75-style Token Studio in light and dark, applying a style, exploring the 17 page templates, switching between desktop and mobile preview, and downloading a React ZIP. Silent video. An offline [MP4 download](docs/media/nimbus-studio-launch-demo.mp4) is also included in this repository.
 
 Nimbus has proven a **20× reduction in UI-code tokens for Claude Code and Cursor**. Let your agent focus on the important stuff: Nimbus takes care of the UI contract, so the context budget goes toward product logic and decisions instead of repetitive UI code.
 
