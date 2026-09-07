@@ -1,0 +1,33 @@
+{
+  "name": "remotion-launch",
+  "version": "1.0.0",
+  "description": "Nimbus UI Studio Lab product-launch demo, rendered with Remotion.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@remotion/cli": "4.0.521",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.521"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.521",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.19.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src test && tsc",
+    "test": "node --no-warnings --experimental-strip-types --test test/*.test.ts",
+    "render:launch": "remotion render NimbusLaunch ../../docs/media/nimbus-studio-launch-demo.mp4 --codec=h264 --crf=18"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}

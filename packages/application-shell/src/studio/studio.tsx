@@ -404,15 +404,10 @@ export function VisualStudio() {
           aria-label="Nimbus UI Studio"
         >
           <span className="studio-logo">
-            <svg viewBox="0 0 28 28" aria-hidden="true">
-              <path
-                d="M5 22V6l9 11V6h9v16l-9-11v11"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <img
+              src="/nimbus-studio-logo.jpg"
+              alt="Nimbus UI Studio leopard and mountain logo"
+            />
           </span>
           <strong>
             Nimbus<span>UI Studio</span>
