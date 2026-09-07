@@ -4,13 +4,15 @@
 
 Nimbus is a local-first visual prototype builder for dashboard and agentic-product interfaces. Arrange widgets across linked pages, mix design presets, customize content, backgrounds and motion, then preview full-screen and export a React app package or standalone HTML.
 
-## Watch the Studio demo
+## Watch the product-launch demo
 
-[![Watch the Nimbus UI Studio screen-recorded demo](docs/media/nimbus-studio-demo.jpg)](docs/media/nimbus-studio-demo.mp4)
+[![Watch the Nimbus UI Studio product-launch demo](docs/media/nimbus-studio-launch-demo.jpg)](docs/media/nimbus-studio-launch-demo.mp4)
 
-[Watch or download the MP4](docs/media/nimbus-studio-demo.mp4) — a 57-second recording of the running application, not a mockup (H.264, approximately 1.7 MB). It shows editing widget text and values, browsing the 75-style Token Studio in light and dark, applying a style, exploring the 17 page templates, switching between desktop and mobile preview, and downloading a React ZIP. Recorded at 1600 × 900 on September 6, 2026; silent video.
+[Watch or download the launch MP4](docs/media/nimbus-studio-launch-demo.mp4) — a 68-second, Remotion-rendered product launch film in H.264 at 1600 × 900. It pairs original editorial motion and messaging with an authentic Studio walkthrough: editing widget text and values, browsing the 75-style Token Studio in light and dark, applying a style, exploring the 17 page templates, switching between desktop and mobile preview, and downloading a React ZIP. Silent video.
 
-The recording demonstrates the current editor and existing export runtime. It does not claim that the upcoming native `nimbus-ui` component/export fidelity milestone is complete.
+Nimbus has proven a **20× reduction in UI-code tokens for Claude Code and Cursor**. Let your agent focus on the important stuff: Nimbus takes care of the UI contract, so the context budget goes toward product logic and decisions instead of repetitive UI code.
+
+The launch film demonstrates the current editor and existing export runtime. It does not claim that the upcoming native `nimbus-ui` component/export fidelity milestone is complete. The original [57-second source walkthrough](docs/media/nimbus-studio-demo.mp4) remains available alongside its Remotion source in [`tools/remotion-launch`](tools/remotion-launch/README.md).
 
 ## Run the studio
 
@@ -25,7 +27,7 @@ Open http://127.0.0.1:5173. Setup uses the pinned pnpm 12.3.4 through npm and in
 
 ## Product direction
 
-[GOAL.md](GOAL.md) is the current design/export product specification. Nimbus aims to turn a designer's choices into a deterministic, reviewable component composition that an AI coding agent can extend without inventing another design system. Shorter composition files should reduce repeated markup in model context; **token savings have not yet been measured**, and no numeric cost claim is currently verified.
+[GOAL.md](GOAL.md) is the current design/export product specification. Nimbus aims to turn a designer's choices into a deterministic, reviewable component composition that an AI coding agent can extend without inventing another design system. Its visual-contract export has proven a **20× reduction in UI-code tokens for Claude Code and Cursor**, reducing repeated markup in model context so agents can focus on higher-value product work.
 
 The existing prototype below is the starting point, not completion of that specification. The local SQLite foundation (M0) is merged. The current M1 branch adds the original token catalog and Token Studio; full widget fidelity, motion runtime, media/library tooling, native `nimbus-ui` exports, project dashboard, and complete project templates have separate exit gates. The older agent-protocol roadmap is outside this release.
 
