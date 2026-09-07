@@ -4,7 +4,7 @@
 
 Nimbus is a local-first visual prototype builder for dashboard and agentic-product interfaces. Arrange widgets across linked pages, mix design presets, customize content, backgrounds and motion, then preview full-screen and export a React app package or standalone HTML.
 
-## Watch the product-launch demo
+## Watch the product demo
 
 [![Watch the Nimbus UI Studio product-launch demo on YouTube](docs/media/nimbus-studio-launch-demo.jpg)](https://youtu.be/eN99KBtA9Pg)
 
