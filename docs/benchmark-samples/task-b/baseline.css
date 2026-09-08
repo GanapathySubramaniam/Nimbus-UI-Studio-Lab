@@ -1,0 +1,66 @@
+.agent-panel {
+  display: grid;
+  gap: 16px;
+}
+.agent-card {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #26303b;
+  background: #10161d;
+}
+.agent-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #ece9ff;
+  color: #6d5ce0;
+  font-size: 11px;
+  font-weight: 700;
+}
+.agent-name {
+  margin: 10px 0 4px;
+  font: 600 18px "Space Grotesk", sans-serif;
+}
+.agent-meta {
+  margin: 0;
+  color: #7c8895;
+  font-size: 12px;
+}
+.prompt-field {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #26303b;
+  background: #10161d;
+}
+.prompt-title {
+  margin: 0 0 10px;
+  font: 600 14px "Space Grotesk", sans-serif;
+}
+.prompt-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #2a3541;
+  resize: none;
+}
+.prompt-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.prompt-hint {
+  font-size: 11px;
+  color: #7c8895;
+}
+.btn-solid {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: none;
+  background: #496ba2;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
