@@ -2,9 +2,9 @@
 
 This is a protocol, not a press release. It exists so any speed claim made
 about the Canvas Studio (drag/drop/resize component builder in
-`packages/application-shell`) can be checked by someone who has never
-talked to the author. If you see a multiplier quoted anywhere for this
-project and this file has no matching entry in
+`packages/application-shell/src/studio`) can be checked by someone who
+has never talked to the author. If you see a multiplier quoted anywhere
+for this project and this file has no matching entry in
 [Recorded runs](#recorded-runs), treat the number as unverified.
 
 ## What is being compared
@@ -65,10 +65,57 @@ Acceptance: badge above the row, row shows all three text fields.
 
 ## Recorded runs
 
-None yet. Add a row per run:
+No human-timed run yet. Add a row per run:
 
 | Date | Commit | Task | Baseline (min) | Canvas Studio (min) | Ratio | Operator |
 | ---- | ------ | ---- | --------------- | -------------------- | ----- | -------- |
+
+## Sample run (agent-driven, not a human timing)
+
+One trial of Task A was actually executed and measured, to check the
+protocol works end to end and to report a real, non-fabricated number
+while [Recorded runs](#recorded-runs) waits for a human operator. Read
+the caveat before quoting this anywhere.
+
+**Setup**: commit `41f9111e0346fa0ef136cf3bc79693c8d64a35e0`, Chromium
+via Playwright, `apps/reference-vite` production build served locally.
+The operator was Claude (Sonnet 5) driving both arms through scripted
+tool calls — not a person, and not a blinded UI study. Wall-clock
+numbers below measure tool-call/automation latency, not human
+typing or mouse speed, and **the two times are not compared to each
+other** — doing so would smuggle back exactly the unfalsifiable
+multiplier this file exists to prevent.
+
+| Arm | What was measured | Result |
+| --- | --- | --- |
+| Canvas Studio | Wall-clock to add the heading, button, and 3 stat tiles, set their content, and position them to match Task A's acceptance criteria | 2.77 s |
+| Canvas Studio | Wall-clock through opening the Export code dialog on "React component" / "Whole app" (default) | 4.19 s |
+| Canvas Studio | Generated code size | 6,895 characters / **1,709 tokens** (`cl100k_base`, via `gpt-tokenizer`) |
+| Hand-written baseline | Equivalent JSX + CSS written from scratch, no lookups | 1,890 characters / **572 tokens** (`cl100k_base`) |
+| Hand-written baseline | Wall-clock to author both files | 16.9 s (agent tool-call latency — explicitly not a proxy for human typing speed) |
+
+Raw artifacts from this run are committed at
+`docs/benchmark-samples/task-a/` (`baseline.tsx` + `baseline.css` vs.
+`studio-export.tsx`) so the character/token counts above can be
+recomputed independently:
+
+```sh
+npm install gpt-tokenizer
+node -e "const {encode}=require('gpt-tokenizer');const fs=require('fs');
+console.log(encode(fs.readFileSync(process.argv[1],'utf8')).length)" \
+  docs/benchmark-samples/task-a/studio-export.tsx
+```
+
+**Reading this honestly**: the Studio's default export was ~3x more
+tokens than the hand-written equivalent for this task, because the
+default scope ("Whole app") ships the full project document (widget
+tree, per-widget style objects, project metadata), not a minimal
+snippet. That is the expected shape of a whole-app export, not a
+defect — but it means "tokens saved" is not a claim this trial
+supports. A follow-up should re-run this with the "Selected widget
+only" export scope, which should shrink the generated code
+substantially, and should record a real human's timing for both arms
+before any speed multiplier is quoted publicly.
 
 ## Known limitations
 
@@ -81,6 +128,10 @@ None yet. Add a row per run:
 - Canvas Studio's output is a positioned-`div` mockup, not the same
   code shape as hand-written semantic JSX — this measures prototyping
   speed to a visual match, not production-code equivalence.
+- Token counts use `cl100k_base` (via the `gpt-tokenizer` package) as a
+  fixed, reproducible reference tokenizer. Other tokenizers will report
+  different absolute counts; the point is that anyone can re-run the
+  same tokenizer against the same files and get the same number.
 
 Pull requests adding rows with real timings (and the commit + prompt
 used) are welcome.

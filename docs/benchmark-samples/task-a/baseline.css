@@ -1,0 +1,52 @@
+.metrics-header {
+  display: grid;
+  gap: 16px;
+}
+.metrics-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.metrics-heading {
+  margin: 0;
+  font: 600 20px "Space Grotesk", sans-serif;
+}
+.btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-solid.btn-accent {
+  background: #62f6d2;
+  border-color: #62f6d2;
+  color: #07100e;
+}
+.stat-tile-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.stat-tile {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #26303b;
+  background: #10161d;
+}
+.stat-label {
+  font-size: 11px;
+  color: #7c8895;
+  text-transform: uppercase;
+}
+.stat-value {
+  font: 600 22px "Space Grotesk", sans-serif;
+  color: #eef3f6;
+}
+.stat-trend {
+  font-size: 11px;
+  color: #62f6d2;
+}
