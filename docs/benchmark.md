@@ -72,32 +72,33 @@ No human-timed run yet. Add a row per run:
 
 ## Sample run (agent-driven, not a human timing)
 
-One trial of Task A was actually executed and measured, to check the
-protocol works end to end and to report a real, non-fabricated number
+All three tasks were actually executed and measured, to check the
+protocol works end to end and to report real, non-fabricated numbers
 while [Recorded runs](#recorded-runs) waits for a human operator. Read
-the caveat before quoting this anywhere.
+the caveats before quoting any of this.
 
-**Setup**: commit `41f9111e0346fa0ef136cf3bc79693c8d64a35e0`, Chromium
-via Playwright, `apps/reference-vite` production build served locally.
-The operator was Claude (Sonnet 5) driving both arms through scripted
-tool calls — not a person, and not a blinded UI study. Wall-clock
-numbers below measure tool-call/automation latency, not human
-typing or mouse speed, and **the two times are not compared to each
-other** — doing so would smuggle back exactly the unfalsifiable
-multiplier this file exists to prevent.
+**Setup**: commit `41f9111e0346fa0ef136cf3bc79693c8d64a35e0` (app code
+unchanged as of this file's own commit), Chromium via Playwright,
+`apps/reference-vite` production build served locally. The operator
+was Claude (Sonnet 5) driving both arms through scripted tool calls —
+not a person, and not a blinded UI study. Wall-clock numbers measure
+tool-call/automation latency, not human typing or mouse speed, and
+**the Studio and baseline times are not compared to each other** —
+doing so would smuggle back exactly the unfalsifiable multiplier this
+file exists to prevent.
 
-| Arm | What was measured | Result |
-| --- | --- | --- |
-| Canvas Studio | Wall-clock to add the heading, button, and 3 stat tiles, set their content, and position them to match Task A's acceptance criteria | 2.77 s |
-| Canvas Studio | Wall-clock through opening the Export code dialog on "React component" / "Whole app" (default) | 4.19 s |
-| Canvas Studio | Generated code size | 6,895 characters / **1,709 tokens** (`cl100k_base`, via `gpt-tokenizer`) |
-| Hand-written baseline | Equivalent JSX + CSS written from scratch, no lookups | 1,890 characters / **572 tokens** (`cl100k_base`) |
-| Hand-written baseline | Wall-clock to author both files | 16.9 s (agent tool-call latency — explicitly not a proxy for human typing speed) |
+| Task | Studio build (s) | Studio + export dialog (s) | Generated code | Hand-written baseline | Baseline authoring (s) |
+| --- | --- | --- | --- | --- | --- |
+| A — Metrics header | 2.63 | 4.04 | 6,895 chars / **1,709 tokens** | 1,890 chars / **572 tokens** | 16.9 |
+| B — Agent status panel | 1.03 | 1.79 | 3,264 chars / **807 tokens** | 1,887 chars / **596 tokens** | 16.7 |
+| C — Activity table row | 1.05 | 1.81 | 3,256 chars / **808 tokens** | 953 chars / **301 tokens** | 14.0 |
 
-Raw artifacts from this run are committed at
-`docs/benchmark-samples/task-a/` (`baseline.tsx` + `baseline.css` vs.
-`studio-export.tsx`) so the character/token counts above can be
-recomputed independently:
+(tokens: `cl100k_base` via `gpt-tokenizer`)
+
+Raw artifacts for all three are committed at
+`docs/benchmark-samples/task-{a,b,c}/` (`baseline.tsx` + `baseline.css`
+vs. `studio-export.tsx`) so the counts above can be recomputed
+independently:
 
 ```sh
 npm install gpt-tokenizer
@@ -106,16 +107,25 @@ console.log(encode(fs.readFileSync(process.argv[1],'utf8')).length)" \
   docs/benchmark-samples/task-a/studio-export.tsx
 ```
 
-**Reading this honestly**: the Studio's default export was ~3x more
-tokens than the hand-written equivalent for this task, because the
-default scope ("Whole app") ships the full project document (widget
-tree, per-widget style objects, project metadata), not a minimal
-snippet. That is the expected shape of a whole-app export, not a
-defect — but it means "tokens saved" is not a claim this trial
-supports. A follow-up should re-run this with the "Selected widget
-only" export scope, which should shrink the generated code
-substantially, and should record a real human's timing for both arms
-before any speed multiplier is quoted publicly.
+**Reading this honestly**: the generated export carries a largely
+fixed per-page cost (project metadata, widget tree, per-widget style
+objects) on top of the actual widget content — roughly 600-700 tokens
+of scaffolding regardless of task size. That overhead dominates on a
+small task (B: 807 tokens generated for a 2-widget panel whose
+hand-written equivalent is 596) and is proportionally smaller on a
+bigger one (A: 5 widgets). None of these three trials support a
+"fewer tokens" claim for the default "Whole app" export scope — a
+follow-up measuring the "Selected widget only" scope should come
+before any such claim is made, alongside a real human-timed run.
+
+**Disclosed deviations**: the component palette has no widget
+literally named "agent card" or "prompt field" — Task B used the
+closest matches ("Agent status" and "Message composer" widgets), and
+its card's tone was left at the theme default rather than set to
+violet (that control's field structure wasn't scripted in this
+trial). Task C's "data row" was built with the "Data table" widget
+set to one header row plus one data row, since no standalone
+single-row widget exists in the palette.
 
 ## Known limitations
 
@@ -132,6 +142,11 @@ before any speed multiplier is quoted publicly.
   fixed, reproducible reference tokenizer. Other tokenizers will report
   different absolute counts; the point is that anyone can re-run the
   same tokenizer against the same files and get the same number.
+- The Studio embeds a random UUID per widget in its exported project
+  JSON, so re-exporting the identical on-screen design generates a
+  file that differs by a couple of tokens each time. The counts above
+  match the specific files committed under `docs/benchmark-samples/`;
+  a fresh export of the same design will be close but not bit-identical.
 
 Pull requests adding rows with real timings (and the commit + prompt
 used) are welcome.
