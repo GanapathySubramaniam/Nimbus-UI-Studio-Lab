@@ -31,6 +31,7 @@ const paths: Record<string, string> = {
   help: "M9 9a3 3 0 1 1 5 2c-2 1-2 2-2 3 M12 17h.01 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0",
   chart: "M4 3v17h17 M8 16v-5 M13 16V7 M18 16V4",
   text: "M4 4h16 M12 4v17 M8 21h8",
+  link: "M9 17H7a5 5 0 0 1 0-10h2 M15 7h2a5 5 0 0 1 0 10h-2 M8 12h8",
 };
 export function Icon({
   name,

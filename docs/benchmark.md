@@ -127,6 +127,53 @@ trial). Task C's "data row" was built with the "Data table" widget
 set to one header row plus one data row, since no standalone
 single-row widget exists in the palette.
 
+## MCP tool-call token efficiency
+
+The sections above measure the *output* code's size. This section measures
+a different, arguably more relevant thing for an agent-facing tool: how
+many tokens an agent must *emit* to produce a given UI — hand-written
+JSX+CSS vs. calling the `@nimbus-ui-studio/mcp-server` MCP tools
+(`packages/mcp-nimbus-studio/`) that assemble the same design from the
+Studio's real component catalog.
+
+**Setup**: Task A's five widgets (heading, button, 3 stat tiles) were
+actually built by calling the MCP server's `add_widget` tool five times
+against a real running server instance, then verified against Task A's
+acceptance criteria via `export_code` (heading and button present with the
+right titles, three `stat` widgets present). The alternative being compared
+is the same hand-written baseline already committed at
+`docs/benchmark-samples/task-a/`.
+
+| What | Size |
+| --- | --- |
+| 5 MCP tool calls (`add_widget` × 5) | 665 chars / **203 tokens** |
+| Hand-written JSX + CSS (same 5 elements) | 1,889 chars / **572 tokens** |
+| Ratio | **2.82x fewer tokens** via MCP calls |
+
+Raw artifacts are committed at `docs/benchmark-samples/task-a-mcp/`
+(`mcp-calls.json` — the exact tool name + arguments for each call — and
+`mcp-calls.txt`, the exact text that was tokenized). Recompute independently:
+
+```sh
+npm install gpt-tokenizer
+node -e "const {encode}=require('gpt-tokenizer');const fs=require('fs');
+console.log(encode(fs.readFileSync(process.argv[1],'utf8')).length)" \
+  docs/benchmark-samples/task-a-mcp/mcp-calls.txt
+```
+
+Re-run the calls yourself: `packages/mcp-nimbus-studio/.smoke/token-efficiency.mjs`
+spawns the real server, replays `mcp-calls.json` through it, checks the
+result against Task A's acceptance criteria, and prints the same numbers.
+
+**Reading this honestly**: this is one task, one trial, measured by the
+agent that built the feature — not an independent or adversarial
+measurement, and not yet repeated for Tasks B or C. The comparison is fair
+in the sense that both sides describe the identical five elements with the
+identical content, but "fewer tokens to describe a design" is a different
+claim from "fewer tokens end to end" (a real session also spends tokens on
+tool-call scaffolding, reading tool results, and any back-and-forth) — this
+number should not be quoted as a whole-session multiplier.
+
 ## Known limitations
 
 - Single-operator timings are anecdotal, not a controlled study — n=1

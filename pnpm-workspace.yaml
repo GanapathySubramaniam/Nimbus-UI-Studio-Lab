@@ -3,6 +3,15 @@ packages:
   - 'packages/*'
   - 'fixtures/*'
 
+allowBuilds:
+  # esbuild's postinstall only downloads its own pinned native binary for this
+  # platform; required by tsx (packages/mcp-nimbus-studio) to run TypeScript
+  # sources directly with bundler-style module resolution, no build step.
+  esbuild: true
+
+catalog:
+  gpt-tokenizer: ^4.0.0
+
 catalogMode: strict
 
 onlyBuiltDependencies: []

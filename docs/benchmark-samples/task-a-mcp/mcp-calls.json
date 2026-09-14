@@ -1,0 +1,7 @@
+[
+  {"tool":"add_widget","arguments":{"kind":"heading","x":40,"y":40,"width":420,"height":64,"title":"Portfolio overview"}},
+  {"tool":"add_widget","arguments":{"kind":"button","x":900,"y":40,"width":190,"height":52,"title":"New agent run"}},
+  {"tool":"add_widget","arguments":{"kind":"stat","x":40,"y":140,"width":220,"height":120,"title":"Active agents","value":"24","subtitle":"up 12%"}},
+  {"tool":"add_widget","arguments":{"kind":"stat","x":280,"y":140,"width":220,"height":120,"title":"Tasks completed","value":"1,284","subtitle":"up 8.4%"}},
+  {"tool":"add_widget","arguments":{"kind":"stat","x":520,"y":140,"width":220,"height":120,"title":"Success rate","value":"98.6%"}}
+]

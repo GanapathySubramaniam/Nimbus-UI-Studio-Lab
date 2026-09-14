@@ -1,0 +1,30 @@
+{
+  "name": "@nimbus-ui-studio/mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server exposing the Nimbus UI Studio's real component catalog and design engine as tools, so any MCP-compatible coding agent can assemble a UI by calling tools instead of writing JSX.",
+  "bin": {
+    "nimbus-studio-mcp": "./bin/nimbus-studio-mcp.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "generate:skill-refs": "tsx src/skill-sync.ts",
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "@nimbus-ui-studio/application-shell": "workspace:*",
+    "tsx": "4.23.13",
+    "zod": "4.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "26.4.1",
+    "gpt-tokenizer": "catalog:"
+  }
+}
