@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css"
+    "./styles.css": "./src/styles.css",
+    "./studio-engine": "./src/studio/engine.ts"
   },
   "scripts": {
     "build": "tsc -b",

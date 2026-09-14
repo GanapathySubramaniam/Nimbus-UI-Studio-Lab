@@ -84,6 +84,8 @@ export function VisualStudio() {
   const fileRef = useRef<HTMLInputElement>(null),
     lastSaved = useRef("");
   const importGeneration = useRef(0);
+  const [agentSync, setAgentSync] = useState(false);
+  const [agentConnected, setAgentConnected] = useState(false);
   useEffect(() => {
     let active = true;
     void loadProject()
@@ -171,6 +173,31 @@ export function VisualStudio() {
     },
     [commitProject],
   );
+  // Opt-in: mirrors a local coding agent's edits (via the Nimbus MCP server's
+  // live-sync bridge) straight into this tab. Never connects on its own.
+  useEffect(() => {
+    if (!agentSync) {
+      setAgentConnected(false);
+      return;
+    }
+    const port = new URLSearchParams(window.location.search).get("agentPort") || "4796";
+    const source = new EventSource(`http://127.0.0.1:${port}/events`);
+    source.addEventListener("project", (event) => {
+      try {
+        const incoming = parseProject((event as MessageEvent<string>).data);
+        commitProject(incoming);
+        setPageId(incoming.startPageId);
+        setPageEpoch((v) => v + 1);
+        setSelectedId(null);
+        setNotice("Live update received from the connected agent.");
+      } catch {
+        setNotice("Received an invalid project update from the agent.");
+      }
+    });
+    source.onopen = () => setAgentConnected(true);
+    source.onerror = () => setAgentConnected(false);
+    return () => source.close();
+  }, [agentSync, commitProject]);
   const selectPage = useCallback((id: string) => {
     importGeneration.current++;
     setPageId(id);
@@ -499,6 +526,15 @@ export function VisualStudio() {
             <Icon name="redo" />
           </button>
           <span className="studio-header-divider" />
+          <button
+            className="studio-secondary"
+            onClick={() => setAgentSync((v) => !v)}
+            aria-pressed={agentSync}
+            title="Mirror a local coding agent's edits (via the Nimbus MCP server) live onto this canvas"
+          >
+            <Icon name="link" />
+            {agentSync ? (agentConnected ? "Agent connected" : "Connecting…") : "Connect agent"}
+          </button>
           <button
             className="studio-secondary"
             onClick={() => setFullscreenPreview(true)}

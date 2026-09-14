@@ -113,6 +113,15 @@ Do not build these. Do not partially build these.
 - **Agent protocol adapters (AG-UI, A2UI, A2A).** These belong to a different product. See
   the scope note in Section 16.
 - The MCP connector that lets an agent drive the Studio. This is v2, after the core ships.
+  **Amendment, 2026-09-14**: built ahead of this schedule at the maintainer's explicit,
+  direct request (`packages/mcp-nimbus-studio/`, verification in
+  `docs/nimbus-mcp-verification.md`). Section 16's "canvas first" ordering was not
+  followed for this piece — M2's fidelity gate and M3's persistent canvas still do not
+  exist by this document's own Milestone Ladder. The new package does not touch canvas
+  rendering, export fidelity, or the invariants in Section 4; it composes existing catalog
+  widgets through the same engine the app already uses. Whether pulling this forward was
+  the right call, given Section 16's warning, is worth the maintainer revisiting once M2–M3
+  land.
 - Mobile or native app targets
 - Internationalization beyond English in v1
 - Billing, telemetry, analytics

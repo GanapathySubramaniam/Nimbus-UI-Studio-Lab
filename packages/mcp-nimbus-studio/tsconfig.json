@@ -1,0 +1,10 @@
+{
+  "extends": "../config/typescript/server.json",
+  "compilerOptions": {
+    "lib": ["ES2024", "DOM"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+  },
+  "include": ["src"]
+}

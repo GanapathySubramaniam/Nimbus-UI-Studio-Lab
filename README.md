@@ -50,6 +50,41 @@ The existing prototype below is the starting point, not completion of that speci
 
 Read [the studio guide](docs/studio-guide.md) for shortcuts, export behavior and limitations.
 
+## Agent integration: MCP server and skill
+
+`packages/mcp-nimbus-studio` is a standard MCP server (stdio,
+`@modelcontextprotocol/sdk`) that exposes the Studio's real widget catalog
+and design engine as tools — `add_widget`, `update_widget`, `export_code`,
+and 16 others — so a coding agent assembles a UI by calling tools instead
+of writing JSX/CSS. It runs the same engine the app and its Export dialog
+use (`packages/application-shell/src/studio/engine.ts`), so anything built
+through it opens and exports identically in the app. No build step; works
+with Claude Code, Codex CLI, or any other MCP-compatible client — see
+[the package README](packages/mcp-nimbus-studio/README.md) to register it.
+
+A companion skill at
+[`.claude/skills/nimbus-ui-designer/`](.claude/skills/nimbus-ui-designer/SKILL.md)
+documents the workflow. Its reference docs are generated from the live
+catalog, not hand-maintained, and grow automatically: an agent can save a
+composed group of widgets as a named, reusable component
+(`save_component`), which regenerates the skill's saved-components
+reference for every future session.
+
+The running Studio app can also mirror an agent's edits live: click
+**Connect agent** in its header to subscribe to the MCP server's local
+live-sync bridge. Off by default.
+
+Measured on one task (a 5-widget header): 203 tokens of MCP tool calls vs.
+572 tokens of hand-written JSX+CSS for the same layout (2.82x fewer) — see
+[`docs/benchmark.md`](docs/benchmark.md#mcp-tool-call-token-efficiency) for
+the exact artifacts, the caveats, and a command to recompute it yourself.
+[`docs/nimbus-mcp-verification.md`](docs/nimbus-mcp-verification.md) records
+what was actually run to test this, including the live-sync check.
+
+This was built ahead of [`GOAL.md`](GOAL.md)'s own milestone order, which
+lists the MCP connector as v2, after the canvas/export core ships — see the
+amendment in that file's Non-Goals section.
+
 ## Code boundaries
 
 The existing Vite and Next.js reference applications consume one shared application-shell entry point. Implementation modules live in `packages/application-shell/src/studio`:
