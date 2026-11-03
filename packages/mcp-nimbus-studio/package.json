@@ -21,7 +21,7 @@
     "@modelcontextprotocol/sdk": "1.30.0",
     "@nimbus-ui-studio/application-shell": "workspace:*",
     "tsx": "4.23.13",
-    "zod": "4.6.4"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@types/node": "26.4.1",
